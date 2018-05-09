@@ -1,0 +1,23 @@
+buRAT Protocol Version 1.01
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+pwn - send command to client
+data - send data to server / pipe data to pipes
+pipe open/close - open or close a pipe
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+0001 - DeathnoteInator
+        -newCient(uuid, type, name, computer, user, os, ip, country, status, inators)
+        -clientList()
+
+0002 - FileReaderWriterInator
+        -write(file, start, sizeToWrite, data)
+        -read(file, start, sizeToRead, data)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PipeInator
+  -pipes
+  -open(clientIn, inatorIn, clientOut, inatorOut)
+  -close(pipeId)
+  -pipe(clientIn, inatorIn)
+
+PacketInator
+  -Serialize(data)
+  -Deserialize(packet)

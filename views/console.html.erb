@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>buRAT 2.0</title>
+  <meta name="description" content="Remote Administration Tool" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimal-ui" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- for ios 7 style, multi-resolution icon of 152x152 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-barstyle" content="black-translucent">
+  <link rel="apple-touch-icon" href="../ruby.svg">
+  <meta name="apple-mobile-web-app-title" content="Flatkit">
+  <!-- for Chrome on Android, multi-resolution icon of 196x196 -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" sizes="196x196" href="../ruby.svg">
+
+  <!-- style -->
+  <link rel="stylesheet" href="../flatkit113/assets/animate.css/animate.min.css" type="text/css" />
+  <link rel="stylesheet" href="../flatkit113/assets/glyphicons/glyphicons.css" type="text/css" />
+  <link rel="stylesheet" href="../flatkit113/assets/font-awesome/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="../flatkit113/assets/material-design-icons/material-design-icons.css" type="text/css" />
+
+  <link rel="stylesheet" href="../flatkit113/assets/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
+  <!-- build:css ../assets/styles/app.min.css -->
+  <link rel="stylesheet" href="../flatkit113/assets/styles/app.css" type="text/css" />
+  <!-- endbuild -->
+  <link rel="stylesheet" href="../flatkit113/assets/styles/font.css" type="text/css" />
+
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- ############ LAYOUT START-->
+
+    <!-- aside -->
+    <div id="aside" class="app-aside modal fade lg nav-dropdown">
+      <div class="left navside grey dk" layout="column">
+        <div class="navbar no-radius">
+          <!-- brand -->
+          <a class="navbar-brand">
+            <img src="../ruby.svg" alt=".">
+            <span class="hidden-folded inline v-m">
+              buRAT 2.0<span class="text-xs text-muted _300 block m-t-xs tagline">ハッカー道</span>
+            </span>
+          </a>
+          <!-- / brand -->
+        </div>
+        <div flex class="hide-scroll">
+          <nav class="scroll nav-border b-primary nav-active-primary">
+
+            <ul class="nav" ui-nav>
+
+              <li class="nav-header hidden-folded">
+                <small class="text-muted">CLIENTS</small>
+              </li>
+
+              <li>
+                <a href="#" >
+                  <span class="nav-icon">
+                    <i class="material-icons">&#xe80e;
+                      <span ui-include="'../flatkit113/assets/images/i_3.svg'"></span>
+                    </i>
+                  </span>
+                  <span class="nav-text" id="nav-clients">Clients</span>
+                </a>
+              </li>
+
+              <li>
+                <a>
+                  <span class="nav-caret">
+                    <i class="fa fa-caret-down"></i>
+                  </span>
+                  <span class="nav-icon">
+                    <i class="material-icons">&#xe32a;
+                      <span ui-include="'../flatkit113//assets/images/i_1.svg'"></span>
+                    </i>
+                  </span>
+                  <span class="nav-text" id="nav-infiltration">Infiltration</span>
+                </a>
+                <ul class="nav-sub">
+                  <li>
+                    <a href="inbox.html" >
+                      <span class="nav-text">Module 1</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="inbox.html" >
+                      <span class="nav-text">Module 2</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li>
+                <a>
+                  <span class="nav-caret">
+                    <i class="fa fa-caret-down"></i>
+                  </span>
+                  <span class="nav-icon">
+                    <i class="material-icons">&#xe8f4;
+                      <span ui-include="'../flatkit113//assets/images/i_1.svg'"></span>
+                    </i>
+                  </span>
+                  <span class="nav-text" id="nav-espionage">Espionage</span>
+                </a>
+                <ul class="nav-sub">
+                  <li>
+                    <a href="inbox.html" >
+                      <span class="nav-text">Module 1</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="inbox.html" >
+                      <span class="nav-text">Module 2</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li>
+                <a>
+                  <span class="nav-caret">
+                    <i class="fa fa-caret-down"></i>
+                  </span>
+                  <span class="nav-icon">
+                    <i class="material-icons">&#xe8ab;
+                      <span ui-include="'../flatkit113//assets/images/i_1.svg'"></span>
+                    </i>
+                  </span>
+                  <span class="nav-text" id="nav-sabotage">Sabotage</span>
+                </a>
+                <ul class="nav-sub">
+                  <li>
+                    <a href="inbox.html" >
+                      <span class="nav-text">Module 1</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="inbox.html" >
+                      <span class="nav-text">Module 2</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="nav-header hidden-folded">
+                <small class="text-muted">SERVER</small>
+              </li>
+
+              <li>
+                <a href="#" >
+                  <span class="nav-icon">
+                    <i class="material-icons">&#xe8b8;
+                      <span ui-include="'../flatkit113/assets/images/i_3.svg'"></span>
+                    </i>
+                  </span>
+                  <span class="nav-text" id="nav-settings">Settings</span>
+                </a>
+              </li>
+
+              <li class="nav-header hidden-folded">
+                <small class="text-muted">HELP</small>
+              </li>
+
+              <li class="hidden-folded" >
+                <a href="#" >
+                  <span class="nav-text" id="nav-documentation">Documentation</span>
+                </a>
+              </li>
+              <li class="hidden-folded" >
+                <a href="#" >
+                  <span class="nav-text" id="nav-about">About <b>buRAT</b> 2.0</span>
+                </a>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+        <div flex-no-shrink>
+          <nav ui-nav>
+            <ul class="nav">
+              <li><div class="b-b b m-t-sm"></div></li>
+              <li class="no-bg">
+                <a>
+                  <span class="nav-icon">
+                    <i class="material-icons">&#xe8ac;</i>
+                  </span>
+                  <span class="nav-text">Logout</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <!-- / aside -->
+
+    <!-- content -->
+    <div id="content" class="app-content box-shadow-z2 box-radius-1x" role="main">
+      <div class="app-header white box-shadow">
+        <div class="navbar">
+          <!-- Open side - Naviation on mobile -->
+          <a data-toggle="modal" data-target="#aside" class="navbar-item pull-left hidden-lg-up">
+            <i class="material-icons">&#xe5d2;</i>
+          </a>
+          <!-- / -->
+
+          <!-- Page title - Bind to $state's title -->
+          <div class="navbar-item pull-left h5" ng-bind="$state.current.data.title" id="pageTitle"></div>
+
+          <!-- navbar right -->
+          <ul class="nav navbar-nav pull-right">
+            <li class="nav-item">
+              <a class="nav-link" href>
+                <i class="material-icons">&#xe877;</i>
+                <span class="label up p-a-0 primary"></span>
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a href class="nav-link" data-toggle="dropdown">
+                <i class="material-icons">&#xe5c3;</i>
+                <span class="label up p-a-0 accent"></span>
+              </a>
+              <div class="dropdown-menu w-xl text-color pull-right p-a-0 animated flipInX">
+
+                <div class="row no-gutter text-{{app.setting.theme.primary}}-hover">
+                  <div class="col-xs-4 b-r b-b">
+                    <a class="p-a block text-center">
+                      <i class="material-icons md-24 text-muted m-v-sm">&#xe190;</i>
+                      <span class="block">Alarm</span>
+                    </a>
+                  </div>
+                  <div class="col-xs-4 b-r b-b">
+                    <a class="p-a block text-center">
+                      <i class="material-icons md-24 text-muted m-v-sm">&#xe87d;</i>
+                      <span class="block">Favorite</span>
+                    </a>
+                  </div>
+                  <div class="col-xs-4 b-b">
+                    <a class="p-a block text-center">
+                      <i class="material-icons md-24 text-muted m-v-sm">&#xe889;</i>
+                      <span class="block">History</span>
+                    </a>
+                  </div>
+                  <div class="col-xs-4 b-r">
+                    <a class="p-a block text-center">
+                      <i class="material-icons md-24 text-muted m-v-sm">&#xe0b0;</i>
+                      <span class="block">Call</span>
+                    </a>
+                  </div>
+                  <div class="col-xs-4 b-r">
+                    <a class="p-a block text-center">
+                      <i class="material-icons md-24 text-muted m-v-sm">&#xe0b7;</i>
+                      <span class="block">Chat</span>
+                    </a>
+                  </div>
+                  <div class="col-xs-4">
+                    <a class="p-a block text-center">
+                      <i class="material-icons md-24 text-muted m-v-sm">&#xe0be;</i>
+                      <span class="block">Inbox</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a href class="nav-link" data-toggle="dropdown">
+                <i class="material-icons">&#xe7f5;</i>
+                <span class="label up p-a-0 warn"></span>
+              </a>
+              <!-- dropdown -->
+              <div class="dropdown-menu pull-right w-xl animated fadeInUp no-bg no-border no-shadow">
+                  <div class="scrollable" style="max-height: 220px">
+                    <ul class="list-group list-group-gap m-a-0">
+                      <li class="list-group-item black lt box-shadow-z0 b">
+                        <span class="pull-left m-r">
+                          <img src="flatkit113/assets/images/a0.jpg" alt="..." class="w-40 img-circle">
+                        </span>
+                        <span class="clear block">
+                          Use awesome <a href class="text-primary">animate.css</a><br>
+                          <small class="text-muted">10 minutes ago</small>
+                        </span>
+                      </li>
+                      <li class="list-group-item black lt box-shadow-z0 b">
+                        <span class="pull-left m-r">
+                          <img src="flatkit113/assets/images/a1.jpg" alt="..." class="w-40 img-circle">
+                        </span>
+                        <span class="clear block">
+                          <a href class="text-primary">Joe</a> Added you as friend<br>
+                          <small class="text-muted">2 hours ago</small>
+                        </span>
+                      </li>
+                      <li class="list-group-item dark-white text-color box-shadow-z0 b">
+                        <span class="pull-left m-r">
+                          <img src="flatkit113/assets/images/a2.jpg" alt="..." class="w-40 img-circle">
+                        </span>
+                        <span class="clear block">
+                          <a href class="text-primary">Danie</a> sent you a message<br>
+                          <small class="text-muted">1 day ago</small>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+              </div>
+              <!-- / dropdown -->
+            </li>
+          </ul>
+          <!-- / navbar right -->
+
+          <!-- navbar collapse -->
+          <div class="collapse navbar-toggleable-sm" id="collapse">
+            <!-- link and dropdown -->
+            <ul class="nav navbar-nav navbar-nav-inline text-center pull-left m-r text-primary-hover">
+              <li class="nav-item" data-toggle="modal" data-target="#modal-console">
+                <a class="nav-link" href="#">
+                  <span class="nav-text">
+                    <i class="material-icons">&#xe1b0;</i>
+                    <span class="text-xs">Console</span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <!-- / link and dropdown -->
+            <!-- search form -->
+            <form class="navbar-form form-inline navbar-item m-l v-m" role="search">
+              <div class="form-group l-h m-a-0">
+                <div class="input-group">
+                  <input type="text" class="form-control b-a form-control-sm" placeholder="Search">
+                  <span class="input-group-btn">
+                    <button type="submit" class="btn btn-sm btn-default b-a no-shadow"><i class="fa fa-search"></i></button>
+                  </span>
+                </div>
+              </div>
+            </form>
+            <!-- / search form -->
+          </div>
+          <!-- / navbar collapse -->
+        </div>
+      </div>
+      <div class="app-footer">
+        <div class="p-a text-xs">
+          <div class="pull-right text-muted">
+            &copy; Copyright DedSec 2017. Dare to Resist.
+            <a ui-scroll-to="content"><i class="fa fa-long-arrow-up p-x-sm"></i></a>
+          </div>
+          <div class="nav">
+            <a class="nav-link" href="../">Version 2.1.0</a>
+          </div>
+        </div>
+      </div>
+      <div ui-view class="app-body" id="view">
+
+        <!-- ############ PAGE START-->
+        <div class="modal fade" id="modal-console">
+          <div class="bottom white b-t" style="height:240px">
+            <div class="row-col">
+              <div class="p-a b-t">
+                <form role="form">
+                  <div class="form-group row">
+                    <div class="col-sm-12">
+                      <textarea class="form-control" id="textarea-console" rows="7" readonly>buRAT 2.0 Console</textarea>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="input-console">
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="padding">
+
+          <div class="box" id="box-clients">
+            <div class="box-header">
+              <h2>Clients</h2>
+              <small>pwned by oninymous</small>
+            </div>
+            <div class="box-body dker">
+              Search: <input id="filter" type="text" class="form-control input-sm w-auto inline m-r"/>
+            </div>
+            <div>
+              <table id="table-pwned-clients" class="table m-b-none" ui-jp="footable" data-filter="#filter" data-page-size="5">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Computer</th>
+                    <th>User</th>
+                    <th>OS</th>
+                    <th>IP</th>
+                    <th>Country</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th data-hide="all"><!--Controls Here--></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <script id="template-client" type="mustache-template">
+                  <tr id="tr-client-{{id}}" class="tr-client">
+                    <td class="td-id">{{id}}</td>
+                    <td class="td-name">{{name}}</td>
+                    <td class="td-computer">{{computer}}</td>
+                    <td class="td-user">{{user}}</td>
+                    <td class="td-os">{{os}}</td>
+                    <td class="td-ip">{{ip}}</td>
+                    <td class="td-country">{{country}}</td>
+                    <td class="td-city">{{city}}</td>
+                    <td class="td-status">{{status}}</td>
+                    <td class="td-controls">
+                      <div class="row-col">
+                        <div class="col-sm-3 col-lg-2">
+                          <div class="p-y">
+                            <div class="nav-active-border left b-primary">
+                              <ul class="nav nav-sm">
+                                <li class="nav-item">
+                                  <a class="nav-link block active a-inators" href data-toggle="tab" data-target="#tab-1">Inators</a>
+                                </li>
+                                <li class="nav-item">
+                                  <a class="nav-link block a-settings" href data-toggle="tab" data-target="#tab-2">Settings</a>
+                                </li>
+                                <li class="nav-item">
+                                  <a class="nav-link block a-settings" href data-toggle="tab" data-target="#tab-3">asd</a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-sm-9 col-lg-10 light lt">
+                          <div class="tab-content pos-rlt">
+                            <div class="tab-pane active div-inators" id="tab-1">
+                              <div class="p-a-md dker _600">Inators</div>
+                              <div class="p-a-md col-md-12">
+                                <div class="m-b" id="accordion-{{id}}">
+
+                                </div>
+                              </div>
+                            </div>
+                            <div class="tab-pane div-settings" id="tab-2">
+                              <div class="p-a-md dker _600">Settings</div>
+                              <form role="form" class="p-a-md col-md-12">
+                                Pipe In | Inator | Pipe Out
+                              </form>
+                            </div>
+                            <div class="tab-pane div-settings" id="tab-3">
+                              <div class="p-a-md dker _600">asd</div>
+                              <form role="form" class="p-a-md col-md-12">
+                                Pipe In | Inator | Pipe Out
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  </script>
+                  <script id="template-inator" type="mustache-template">
+                  <div class="box no-border m-b-xs div-inator">
+                    <div class="box-header p-y-sm">
+                      <span class="pull-right label text-sm span-inator-code">{{inator.code}}</span>
+                      <a class="a-inator-name" data-toggle="collapse" data-parent="#accordion-{{client.id}}" data-target="#c-{{client.id}}-{{inator.code}}">
+                        {{inator.name}}
+                      </a>
+                    </div>
+                    <div id="c-{{client.id}}-{{inator.code}}" class="collapse inator-{{client.code}}">
+                      <div class="box-body">
+                          <div class="form-group row">
+                            <div class="col-sm-12">
+                              <textarea class="form-control textarea-inator" rows="7" wrap="off" readonly></textarea>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <input type="text" class="form-control input-inator">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  </script>
+                </tbody>
+                <tfoot class="hide-if-no-paging">
+                  <tr>
+                    <td colspan="10" class="text-center">
+                      <ul class="pagination"></ul>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <div class="box" id="box-infiltration">
+            <div class="box-header">
+              <h3>Infiltration</h3>
+              <small>We do not forgive. We do not forget. Expect us.</small>
+            </div>
+            <div class="box-body dker">
+              <p class="m-a-0">Everything is connected.</p>
+            </div>
+          </div>
+
+          <div class="box" id="box-espionage">
+            <div class="box-header">
+              <h3>Espionage</h3>
+              <small>The quiter you become the more you are able to hear.</small>
+            </div>
+            <div class="box-body dker">
+              <p class="m-a-0">We are dedsec.</p>
+            </div>
+          </div>
+
+          <div class="box" id="box-sabotage">
+            <div class="box-header">
+              <h3>Sabotage</h3>
+              <small>No system is safe.</small>
+            </div>
+            <div class="box-body dker">
+              <p class="m-a-0">Hacking is our weapon.</p>
+            </div>
+          </div>
+
+          <div class="box" id="box-settings">
+            <div class="box-header">
+              <h3>Settings</h3>
+              <small>Preferences</small>
+            </div>
+            <div class="box-body dker">
+              <p class="m-a-0">We are anonymous.</p>
+            </div>
+          </div>
+
+          <div class="box" id="box-documentation">
+            <div class="box-header">
+              <h3>Documentation</h3>
+              <small>Hacker's guide.</small>
+            </div>
+            <div class="box-body dker">
+              <p class="m-a-0">
+                <pre style="background-color: #2e3e4e;">
+                  $
+            *1▒g▒#▒$▒▒1▒,Q
+           ▒▒▒▒▒▒▒▒▓▒▒▒▒▒
+          #/▒▒▒▒▓▒▒▒▓▒▒▓▒g
+          1▒▒▒▒▒‎▒▒▒▓▓▓▒▒▒▒▓\
+          /@ $@@,0▒▒1▒|7$e$,
+                4j7▒4!
+         |       #7Y*       \
+         4▒    #▒4▒▓9      4
+         $▒9g e@▒▒!4▒▒$-  #e
+         |▒▒▒▒▒#|   |e▓▒▒▓$e
+          Yeg▒▓\,   $9▒▒▒e÷4
+          gp@l▒▒,▒▒Y@▒▒M7 7
+          , ▒▒@1▒▒▒▓9÷▒▒4Q
+             "▓  /Q▒-▒▒7,0$
+          !     ▒▒
+          \▒\▒         ▒440
+          1▒\▒    *▒0    ▒
+           1▓9▒▒▓# ▒*▓   ÷
+             e▒▒▒▓▒▒  ▓▒▒▒
+                g
+
+1. Server - buRAT server
+2. Client - buRAT clients
+  a. Slave - bots
+  b. Master - remote control
+
+deathnote - list of clients
+identification - identification of client
+client - client status
+data - data from the slaves (sent to master)
+pwn - command from the master (sent to slaves)
+pipe - pipe data to other clients
+config - set slave configuration
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Slave              | Server              | Master
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    | deathnote-rxtx      | rxtx-deathnote
+ identification-tx  | rx-identification   |
+                    | client-tx           | rx-client
+ data-tx            | rx-data-tx          | rx-data
+ pwn-rx             | tx-pwn-rx           | tx-pwn
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    | pipeline-rx         | tx-pipeline
+ config-rx          | tx-config-rx        | tx-config
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+{"header":"", "payload":"", "trailer":""}
+
+#INATOR PROTOCOL
+0000 SETTINGS
+0001 REMOTE_SHELL
+0002 FILE_READER
+0003 FILE_WRITER
+0004 DESKTOP_CAPTURE
+0005 CAMERA_CAPTURE
+0006 MICROPHONE_CAPTURE
+0007 MSGBOX
+0008 PRINTER
+0009 TEXT_TO_SPEECH
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                </pre>
+              </p>
+            </div>
+          </div>
+
+          <div class="box" id="box-about">
+            <div class="box-header">
+              <h3>About <b>buRAT</b> 2.0</h3>
+              <small>Version 2.1.0</small>
+            </div>
+            <div class="box-body dker">
+              <p class="m-a-0">
+                The author of this program will not be held liable for any damages caused by using any part or module of this software.
+              </p>
+            </div>
+          </div>
+
+          <!--<iframe width="100%" src="https://www.youtube-nocookie.com/embed/5ViW_BJuHKY?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+-->
+        </div>
+        <!-- ############ PAGE END-->
+
+      </div>
+    </div>
+    <!-- / content -->
+
+    <!-- ############ LAYOUT END-->
+
+  </div>
+  <!-- build:js scripts/app.html.js -->
+  <!-- jQuery -->
+  <script src="../flatkit113/libs/jquery/jquery/dist/jquery.js"></script>
+  <!-- Bootstrap -->
+  <script src="../flatkit113/libs/jquery/tether/dist/js/tether.min.js"></script>
+  <script src="../flatkit113/libs/jquery/bootstrap/dist/js/bootstrap.js"></script>
+  <!-- core -->
+  <script src="../flatkit113/libs/jquery/underscore/underscore-min.js"></script>
+  <script src="../flatkit113/libs/jquery/jQuery-Storage-API/jquery.storageapi.min.js"></script>
+  <script src="../flatkit113/libs/jquery/PACE/pace.min.js"></script>
+  <script src="../flatkit113/libs/js/mustache/mustache.js"></script>
+  <script src="../flatkit113/libs/js/mustache/handlebars.js"></script>
+
+  <script src="../flatkit113/html/scripts/config.lazyload.js"></script>
+
+  <script src="../flatkit113/html/scripts/palette.js"></script>
+  <script src="../flatkit113/html/scripts/ui-load.js"></script>
+  <script src="../flatkit113/html/scripts/ui-jp.js"></script>
+  <script src="../flatkit113/html/scripts/ui-include.js"></script>
+  <script src="../flatkit113/html/scripts/ui-device.js"></script>
+  <script src="../flatkit113/html/scripts/ui-form.js"></script>
+  <script src="../flatkit113/html/scripts/ui-nav.js"></script>
+  <script src="../flatkit113/html/scripts/ui-screenfull.js"></script>
+  <script src="../flatkit113/html/scripts/ui-scroll-to.js"></script>
+  <script src="../flatkit113/html/scripts/ui-toggle-class.js"></script>
+
+  <script src="../flatkit113/html/scripts/app.js"></script>
+
+  <!-- ajax -->
+  <script src="../flatkit113/libs/jquery/jquery-pjax/jquery.pjax.js"></script>
+  <script src="../flatkit113/html/scripts/ajax.js"></script>
+
+  <!-- endbuild -->
+</body>
+</html>
+
+<!-- Console Core -->
+<script type="text/javascript">
+/*
+*   Configuration
+*/
+server = "ws://" + window.document.location.host + "/";
+identification = {
+ "header":"identification",
+ "payload":{
+    "id":"1",
+    "type":"Master",
+    "name":"Android 20",
+    "computer":"reed-pc",
+    "user":"reedleoneil",
+    "os":"Windows 10",
+    "ip":"192.168.1.1",
+    "country":"japan",
+    "city":"tokyo",
+    "inators":[
+       {
+          "code":"4444",
+          "name":"Console"
+       }
+    ]
+ },
+ "trailer":"Dare to Resist"
+};
+
+/*
+*   Websocket Core
+*/
+if ("WebSocket" in window) {
+  ws = new WebSocket(server);
+
+  //Open
+  ws.onopen = function()
+  {
+    console.log("Connected!");
+    ws.send(JSON.stringify(identification));
+  };
+
+  //Message
+  ws.onmessage = function (evt)
+  {
+    console.log(evt.data)
+    try {
+      var packet = JSON.parse(evt.data);
+      var header = packet['header'];
+      var payload = packet['payload'];
+      var trailer = packet['trailer'];
+
+      console_(trailer);
+      console.log(trailer);
+
+      if(header == "deathnote"){ //DEATHNOTE
+        clients = payload;
+        $.each(clients, function(i, client) {
+          if(client.type == "Slave")
+            client_(client);
+        })
+      }else if(header == "client"){ //CLIENT
+        client = payload;
+        if(client.type == "Slave")
+          client_(client);
+      }else if(header == "data"){ //DATA
+        client = payload['client.id'];
+        inator = payload['inator.code'];
+        data = payload['data'];
+        trailer = packet['trailer'];
+        console.log(payload);
+        inator_(client, inator, trailer);
+        process_(client, inator, data);
+      }
+    }
+    catch(err) {
+      console.log(err);
+    }
+  };
+
+  //Close
+  ws.onclose = function()
+  {
+    console.log("Disconnected!");
+  };
+} else {
+  console.log("WebSocket is NOT supported by your Browser!");
+}
+
+/*
+*   Client
+*/
+function client_(client){
+  dom = $("#tr-client-" + client.id);
+
+  if(dom.length){
+
+    dom.find("td.td-name").text(client.name);
+    dom.find("td.td-computer").text(client.computer);
+    dom.find("td.td-user").text(client.user);
+    dom.find("td.td-os").text(client.os);
+    dom.find("td.td-ip").text(client.ip);
+    dom.find("td.td-country").text(client.country);
+    dom.find("td.td-city").text(client.city);
+    dom.find("td.td-status").text(client.status);
+
+    $.each(client.inators, function(i, inator) {
+      if($("#c-" + client.id + "-" + inator.code).length == 0){
+        var context = {client:{id:client.id},inator:{code:inator.code, name:inator.name}}
+        var source   = $('#template-inator').html();
+        var template = Handlebars.compile(source);
+        var html = template(context);
+
+        $('body').find("#accordion-" + client.id).append(html)
+      }
+    })
+
+    $(".inator-" + client.id).each(function(index) {
+      id = $(this).attr("id");
+      meron = false;
+      newname = '';
+      $.each(client.inators, function(i, inator) {
+        search = "c-" + client.id + "-" + inator.code;
+        if(search == id){
+          meron = true;
+          newname = inator.name;
+        }
+      })
+      if(!meron){
+        $(this).closest(".div-inator").remove();
+      }else{
+        $(this).closest(".div-inator").find(".a-inator-name").text(newname);
+      }
+    });
+
+  }else{
+
+    var context = client
+    var source   = $('#template-client').html();
+    var template = Handlebars.compile(source);
+    var html = template(context);
+
+    $("#table-pwned-clients tbody").append(html); //append client template
+    $("#table-pwned-clients").trigger("footable_initialize"); //init table
+
+    $.each(client.inators, function(i, inator) {
+      if($("#c-" + client.id + "-" + inator.code).length == 0){
+        var context = {client:{id:client.id},inator:{code:inator.code, name:inator.name}}
+        var source   = $('#template-inator').html();
+        var template = Handlebars.compile(source);
+        var html = template(context);
+
+        $('body').find("#accordion-" + client.id).append(html)
+      }
+    })
+
+    $(".inator-" + client.id).each(function(index) {
+      id = $(this).attr("id");
+      meron = false;
+      newname = '';
+      $.each(client.inators, function(i, inator) {
+        search = "c-" + client.id + "-" + inator.code;
+        if(search == id){
+          meron = true;
+          newname = inator.name;
+        }
+      })
+      if(!meron){
+        $(this).closest(".div-inator").remove();
+      }else{
+        $(this).closest(".div-inator").find(".a-inator-name").text(newname);
+      }
+    });
+
+  }
+}
+
+/*
+*   Console
+*/
+function console_(log){ //textarea
+  dom = $("#textarea-console");
+  data = dom.text() + log;
+  dom.text(data);
+  dom.scrollTop(dom[0].scrollHeight - dom.height());
+}
+
+$("#input-console").on('keyup', function (e) { //input
+    if (e.keyCode == 13) {
+        packet = $(this).val();
+        ws.send(packet);
+        $(this).val("");
+    }
+});
+
+/*
+*   Inator
+*/
+function inator_(client, inator, trailer){ //textarea
+  dom = $("#c-" + client + "-" + inator).find(".textarea-inator");
+  if(dom.length){
+    data = dom.text() + trailer;
+    dom.text(data);
+    dom.scrollTop(dom[0].scrollHeight - dom.height());
+  }
+}
+
+$(document).on("keyup", ".input-inator", function (e) { //input
+  if (e.keyCode == 13) {
+    client = $(this).closest("tr").prev().find(".td-id").text();
+    inator = $(this).closest(".box").find(".span-inator-code").text();
+    data = $(this).val();
+
+    header = "pwn";
+    payload = {"client.id": client, "inator.code": inator, "data": data};
+    trailer = "pwned";
+
+    packet = {"header": "pwn", "payload": payload, "trailer" : trailer};
+    ws.send(JSON.stringify(packet));
+
+    $(this).val("");
+  }
+});
+
+/*
+*   Process Data
+*/
+function process_(client, inator, data){
+
+}
+
+/*
+*   Navigations
+*/
+$("#box-clients").hide();
+$("#box-infiltration").hide();
+$("#box-espionage").hide();
+$("#box-sabotage").hide();
+$("#box-settings").hide();
+$("#box-documentation").hide();
+$("#box-about").hide();
+
+$("#nav-clients").click(function(){
+  ws.send('{"header": "deathnote"}');
+  $("#box-clients").show();
+  $("#box-infiltration").hide();
+  $("#box-espionage").hide();
+  $("#box-sabotage").hide();
+  $("#box-settings").hide();
+  $("#box-documentation").hide();
+  $("#box-about").hide();
+});
+
+$("#nav-infiltration").click(function(){
+  $("#box-clients").hide();
+  $("#box-infiltration").show();
+  $("#box-espionage").hide();
+  $("#box-sabotage").hide();
+  $("#box-settings").hide();
+  $("#box-documentation").hide();
+  $("#box-about").hide();
+});
+
+$("#nav-espionage").click(function(){
+  $("#box-clients").hide();
+  $("#box-infiltration").hide();
+  $("#box-espionage").show();
+  $("#box-sabotage").hide();
+  $("#box-settings").hide();
+  $("#box-documentation").hide();
+  $("#box-about").hide();
+});
+
+$("#nav-sabotage").click(function(){
+  $("#box-clients").hide();
+  $("#box-infiltration").hide();
+  $("#box-espionage").hide();
+  $("#box-sabotage").show();
+  $("#box-settings").hide();
+  $("#box-documentation").hide();
+  $("#box-about").hide();
+});
+
+$("#nav-settings").click(function(){
+  $("#box-clients").hide();
+  $("#box-infiltration").hide();
+  $("#box-espionage").hide();
+  $("#box-sabotage").hide();
+  $("#box-settings").show();
+  $("#box-documentation").hide();
+  $("#box-about").hide();
+});
+
+$("#nav-documentation").click(function(){
+  $("#box-clients").hide();
+  $("#box-infiltration").hide();
+  $("#box-espionage").hide();
+  $("#box-sabotage").hide();
+  $("#box-settings").hide();
+  $("#box-documentation").show();
+  $("#box-about").hide();
+});
+
+$("#nav-about").click(function(){
+  $("#box-clients").hide();
+  $("#box-infiltration").hide();
+  $("#box-espionage").hide();
+  $("#box-sabotage").hide();
+  $("#box-settings").hide();
+  $("#box-documentation").hide();
+  $("#box-about").show();
+});
+</script>
