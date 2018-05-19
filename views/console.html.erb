@@ -590,6 +590,10 @@ config - set slave configuration
 
 {"header":"", "payload":"", "trailer":""}
 
+android = {"id": "", "type": "", "name": "", "computer": "", "user": "", "os": "", "ip": "", "country": "", "city": "", "inators": [{"code": "", "name": ""}]}
+pwn = {"client":"", "inator":"", "data":""}
+data = {"client":"", "inator":"", "data":""}
+
 #INATOR PROTOCOL
 0000 SETTINGS
 0001 REMOTE_SHELL
@@ -732,8 +736,8 @@ if ("WebSocket" in window) {
         if(client.type == "Slave")
           client_(client);
       }else if(header == "data"){ //DATA
-        client = payload['client.id'];
-        inator = payload['inator.code'];
+        client = payload['client'];
+        inator = payload['inator'];
         data = payload['data'];
         trailer = packet['trailer'];
         console.log(payload);
@@ -880,7 +884,7 @@ $(document).on("keyup", ".input-inator", function (e) { //input
     data = $(this).val();
 
     header = "pwn";
-    payload = {"client.id": client, "inator.code": inator, "data": data};
+    payload = {"client": client, "inator": inator, "data": data};
     trailer = "pwned";
 
     packet = {"header": "pwn", "payload": payload, "trailer" : trailer};
