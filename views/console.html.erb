@@ -729,12 +729,12 @@ if ("WebSocket" in window) {
       if(header == "androids"){ //DEATHNOTE
         androids = payload;
         $.each(androids, function(i, android) {
-          if(android.type == "Slave")
+          //if(android.type == "Slave")
             android_(android);
         })
       }else if(header == "android"){ //ANDROID
         android = payload;
-        if(android.type == "Slave")
+        //if(android.type == "Slave")
           android_(android);
       }else if(header == "data"){ //DATA
         android = payload['android'];
