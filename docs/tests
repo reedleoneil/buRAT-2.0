@@ -1,0 +1,1 @@
+{"header":"pipe",  "payload":{"switch":"open", "android_in":"10969", "inator_in":"1111", "android_out":"1111", "inator_out":"2222", "filter":{"command":"bash -c putangina", "args":{"putangina":"stdout"}}}, "trailer":"pipe protocol test"}

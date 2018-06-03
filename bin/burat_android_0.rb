@@ -47,7 +47,7 @@ EM.run {
         "payload" => {
           "android" => "10969",
           "inator" => "1111",
-          "data" => "#{line}"
+          "data" => {"stdout" => "#{line}"}
         },
         "trailer" => "#{line}"
       }.to_json
@@ -68,7 +68,7 @@ EM.run {
         "payload" => {
           "android" => "10969",
           "inator" => "2222",
-          "data" => "#{line}"
+          "data" => {"stdout" => "#{line}"}
         },
         "trailer" => "#{line}"
       }.to_json

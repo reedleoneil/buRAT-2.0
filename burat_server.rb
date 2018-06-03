@@ -47,9 +47,12 @@ module BuRAT
               android = @androids.find { |android| android["id"] == payload["android"] }
               inator = android["inators"].find { |inator| inator["code"] == payload["inator"] }
               inator["pipes"].each do |pipe|
+                data = pipe["filter"]["command"].dup
+                pipe["filter"]["args"].each { |key, value| data[key] = payload["data"][value] }
                 android = @androids.find { |android| android["id"] == pipe["android"] && android["status"] == "Online"}
                 payload["android"] = pipe["android"]
                 payload["inator"] = pipe["inator"]
+                payload["data"] = data
                 packet = packet("pwn", payload, trailer)
                 android["ws"].send(packet)
               end
@@ -58,7 +61,6 @@ module BuRAT
               android = @androids.find { |android| android["id"] == payload["android"]}
               android["ws"].send(packet)
             elsif header == "pipe" then # pipe - open or close pipe
-              p payload["filter"]
               android = @androids.find { |android| android["id"] == payload["android_in"] }
               inator = android["inators"].find { |inator| inator["code"] == payload["inator_in"] }
               case payload["switch"]
