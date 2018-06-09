@@ -419,13 +419,10 @@
                             <div class="nav-active-border left b-primary">
                               <ul class="nav nav-sm">
                                 <li class="nav-item">
-                                  <a class="nav-link block active a-inators" href data-toggle="tab" data-target="#tab-inators-{{id}}">Inators</a>
+                                  <a class="nav-link block active a-dashboard" href data-toggle="tab" data-target="#tab-dashboard-{{id}}">Dashboard</a>
                                 </li>
                                 <li class="nav-item">
-                                  <a class="nav-link block a-settings" href data-toggle="tab" data-target="#tab-settings-{{id}}">Settings</a>
-                                </li>
-                                <li class="nav-item">
-                                  <a class="nav-link block a-settings" href data-toggle="tab" data-target="#tab-tools-{{id}}">Tools</a>
+                                  <a class="nav-link block a-inators" href data-toggle="tab" data-target="#tab-inators-{{id}}">Inators</a>
                                 </li>
                               </ul>
                             </div>
@@ -433,25 +430,19 @@
                         </div>
                         <div class="col-sm-9 col-lg-10 light lt">
                           <div class="tab-content pos-rlt">
-                            <div class="tab-pane active div-inators" id="tab-inators-{{id}}">
+                            <div class="tab-pane active div-dashboard" id="tab-dashboard-{{id}}">
+                              <div class="p-a-md dker _600">Dashboard</div>
+                              <form role="form" class="p-a-md col-md-12">
+
+                              </form>
+                            </div>
+                            <div class="tab-pane div-inators" id="tab-inators-{{id}}">
                               <div class="p-a-md dker _600">Inators</div>
                               <div class="p-a-md col-md-12">
                                 <div class="m-b" id="accordion-{{id}}">
 
                                 </div>
                               </div>
-                            </div>
-                            <div class="tab-pane div-settings" id="tab-settings-{{id}}">
-                              <div class="p-a-md dker _600">Settings</div>
-                              <form role="form" class="p-a-md col-md-12">
-                                Pipe In | Inator | Pipe Out
-                              </form>
-                            </div>
-                            <div class="tab-pane div-settings" id="tab-tools-{{id}}">
-                              <div class="p-a-md dker _600">asd</div>
-                              <form role="form" class="p-a-md col-md-12">
-                                Pipe In | Inator | Pipe Out
-                              </form>
                             </div>
                           </div>
                         </div>
@@ -593,7 +584,7 @@ config - set slave configuration
 android = {"id": "", "type": "", "name": "", "computer": "", "user": "", "os": "", "ip": "", "country": "", "city": "", "inators": [{"code": "", "name": ""}]}
 pwn = {"android":"", "inator":"", "data":""}
 data = {"android":"", "inator":"", "data":""}
-pipe = {"switch":"open/close", "android_in":"", "inator_in":"", "android_out":"", "inator_out":""}
+pipe = {"switch":"open/close", "android_in":"", "inator_in":"", "android_out":"", "inator_out":"", "filter": {"command":"", "args":{"cmd_args":"data"}}}
 
 #INATOR PROTOCOL
 0000 SETTINGS
@@ -678,27 +669,20 @@ pipe = {"switch":"open/close", "android_in":"", "inator_in":"", "android_out":""
 *   Configuration
 */
 server = "ws://" + window.document.location.host + "/";
-identification = {
- "header":"android",
- "payload":{
-    "id":"1",
-    "type":"Master",
-    "name":"Android 20",
-    "computer":"reed-pc",
-    "user":"reedleoneil",
-    "os":"Windows 10",
-    "ip":"192.168.1.1",
-    "country":"japan",
-    "city":"tokyo",
-    "inators":[
-       {
-          "code":"4444",
-          "name":"Console"
-       }
-    ]
- },
- "trailer":"Dare to Resist"
-};
+identification = {"header": "android",
+                  "payload": {
+                    "id": "0000",
+                    "type": "Master",
+                    "name": "Console",
+                    "computer": "<%= request.user_agent %>",
+                    "user": "<%= request.user_agent %>",
+                    "os": "<%= request.user_agent %>",
+                    "ip": "<%= request.ip %>",
+                    "country": "<%= request.user_agent %>",
+                    "city": "<%= request.user_agent %>",
+                    "inators": [{"code": "0000", "name": "Console"}]
+                  },
+                  "trailer": "console"};
 
 /*
 *   Websocket Core
