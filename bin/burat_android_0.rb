@@ -9,7 +9,7 @@ EM.run {
   ws.on :open do |event|
     p [:open]
     #ws.send('{"header": "identification", "payload": {"id": "2", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"id": "1111", "name": "Remote Shell"}]}, "trailer": "whoami"}')
-    ws.send('{"header": "android", "payload": {"id": "10969", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"code": "1111", "name": "Remote Shell"}, {"code": "2222", "name": "Remote Desktop"}, {"code": "3333", "name": "Remote Hack"}]}, "trailer": "whoami"}')
+    ws.send('{"header": "android", "payload": {"id": "10969", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"id": "1111", "name": "Remote Shell"}, {"id": "2222", "name": "Remote Desktop"}, {"id": "3333", "name": "Remote Hack"}]}, "trailer": "whoami"}')
   end
 
   ws.on :message do |event|

