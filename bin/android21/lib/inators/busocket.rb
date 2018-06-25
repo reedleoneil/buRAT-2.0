@@ -1,21 +1,26 @@
 require 'faye/websocket'
 require 'eventmachine'
-
 class BuSocket < Inator
-  def initialize(id)
-    super(id, "Socket")
+  def initialize()
+    super("2222", "Socket")
+    @ws = nil
   end
+
+  def in(data, log)
+
+  end
+
   def connect(server)
     EM.run {
-      ws = Faye::WebSocket::Client.new(server)
-      Android.instance.ws = ws
+      @ws = Faye::WebSocket::Client.new(server)
+      Android.instance.ws = @ws
 
-      ws.on :open do |event|
+      @ws.on :open do |event|
         p [:open]
-        ws.send(Android.instance.android)
+        @ws.send(Android.instance.android)
       end
 
-      ws.on :message do |event|
+      @ws.on :message do |event|
         p [:message, event.data]
         begin
           packet = JSON.parse(event.data)
@@ -33,11 +38,11 @@ class BuSocket < Inator
         end
       end
 
-      ws.on :close do |event|
+      @ws.on :close do |event|
         p [:close, event.code, event.reason]
-        p "RED"
-        ws = nil
-        connect 'ws://localhost:10969'
+        @ws = nil
+        sleep 1
+        connect server
       end
     }
   end

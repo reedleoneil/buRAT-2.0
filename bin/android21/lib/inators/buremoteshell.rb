@@ -6,8 +6,10 @@ class BuRemoteShell < Inator
   end
 
   def in(data, log)
-    cmd = data
-    puts cmd
+    shell data
+  end
+
+  def shell(cmd)
     stdin, stdout, stderr, wait_thr = Open3.popen2e(cmd)
     Thread.new {
     while line = stdout.gets

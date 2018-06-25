@@ -7,17 +7,13 @@ class Inator
   end
 
   def in(data, log)
-    p "not implemented"
+
   end
 
   def out(data ,log)
     packet = {
       "header" => "data",
-      "payload" => {
-        "android" => Android.instance.id,
-        "inator" => @id,
-        "data" => data
-      },
+      "payload" => { "android" => Android.instance.id, "inator" => @id, "data" => data },
       "trailer" => log
     }.to_json
     Android.instance.ws.send(packet)

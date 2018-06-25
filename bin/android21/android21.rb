@@ -1,14 +1,18 @@
 
-require 'json'
-require_relative 'lib/android'
-require_relative 'lib/inator'
-require_relative 'lib/inators/busocket'
-require_relative 'lib/inators/buremoteshell'
+gems = ['json']
+libs = [
+          'lib/android',
+          'lib/inator',
+          'lib/inators/busocket',
+          'lib/inators/buremoteshell'
+        ]
 
-socket_inator = BuSocket.new 1111
-remote_shell = BuRemoteShell.new
+gems.each { |gem| require gem }
+libs.each { |lib| require_relative lib }
 
-Android.instance.inators << socket_inator
-Android.instance.inators << remote_shell
+android = Android.instance
 
-socket_inator.connect 'ws://localhost:10969'
+android.inators << BuSocket.new
+android.inators << BuRemoteShell.new
+
+android.connect 'ws://localhost:10969'
