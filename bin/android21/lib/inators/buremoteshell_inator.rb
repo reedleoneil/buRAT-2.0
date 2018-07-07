@@ -1,11 +1,11 @@
 require 'open3'
 
-class BuRemoteShell < Inator
-  def initialize()
-    super("1111", "Remote Shell")
+class BuRemoteShellInator < Inator
+  def initialize(id, name)
+    super(id, name)
   end
 
-  def in(data, log)
+  def input(data, log)
     shell data
   end
 
@@ -14,7 +14,7 @@ class BuRemoteShell < Inator
     Thread.new {
     while line = stdout.gets
       data = {"stdout" => "#{line}"}
-      out(data, line)
+      output(data, line)
     end
     }
   end

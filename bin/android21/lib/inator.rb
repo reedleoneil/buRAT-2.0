@@ -6,16 +6,11 @@ class Inator
     @name = name
   end
 
-  def in(data, log)
-
+  def input(data, log)
+    #Implement on the concrete class.
   end
 
-  def out(data ,log)
-    packet = {
-      "header" => "data",
-      "payload" => { "android" => Android.instance.id, "inator" => @id, "data" => data },
-      "trailer" => log
-    }.to_json
-    Android.instance.ws.send(packet)
+  def output(data ,log)
+    Android.instance.output(@id, data, log)
   end
 end
