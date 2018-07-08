@@ -2,20 +2,20 @@ require 'singleton'
 
 class Android
   include Singleton
-  attr_accessor :id, :type, :name, :computer, :user, :os, :ip, :country, :city, :status, :inators, :ws
+  attr_accessor :id, :type, :name, :computer, :user, :os, :ip, :country, :city, :status, :inators, :socket
   def initialize
-    @id = "1234"              # unique id
-    @type = "Master"          # slave/master
-    @name = "Android 21"      # name of client
-    @computer = "Unknown"     # machine name
-    @user = "Defalt"          # user
-    @os = "Unkonwn"           # operating system
-    @ip = "Unkonwn"           #ip address
-    @country = "Unkonwn"      # country
-    @city = "Unkonwn"         # city
-    @status = "Unkonwn"       # online/offline/error
-    @inators = []             # inators
-    @ws = nil                 # websocket object
+    @id = ''           # unique id
+    @type = ''         # slave/master
+    @name = ''         # name of client
+    @computer = ''     # machine name
+    @user = ''         # user
+    @os = ''           # operating system
+    @ip = ''           # ip address
+    @country = ''      # country
+    @city = ''         # city
+    @status = ''       # online/offline/error
+    @inators = []      # inators
+    @socket = nil      # socket
   end
 
   def android
@@ -39,16 +39,16 @@ class Android
     }.to_json
   end
 
-  def connect(server)
+  def connect
     EM.run {
-      @ws = Faye::WebSocket::Client.new(server)
+      @socket.socket = Faye::WebSocket::Client.new(@socket.host)
 
-      @ws.on :open do |event|
+      @socket.socket.on :open do |event|
         p [:open]
-        @ws.send(android)
+        @socket.socket.send(android)
       end
 
-      @ws.on :message do |event|
+      @socket.socket.on :message do |event|
         p [:message, event.data]
         begin
           packet = JSON.parse(event.data)
@@ -70,17 +70,19 @@ class Android
         end
       end
 
-      @ws.on :close do |event|
+      @socket.socket.on :close do |event|
         p [:close, event.code, event.reason]
-        @ws = nil
-        sleep 1
-        connect server
+        @socket.socket = nil
+        if @socket.reconnect_enabled == true then
+          sleep @socket.reconnect_interval
+          connect
+        end
       end
     }
   end
 
   def disconnect
-    @ws.close
+    @socket.socket.close
   end
 
   def input(inator, data, log)
@@ -94,6 +96,6 @@ class Android
       "payload" => { "android" => @id, "inator" => inator, "data" => data },
       "trailer" => log
     }.to_json
-    @ws.send packet
+    @socket.socket.send packet
   end
 end
