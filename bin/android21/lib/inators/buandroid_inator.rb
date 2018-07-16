@@ -4,7 +4,7 @@ class BuAndroidInator < Inator
     @android = android
   end
 
-  def input(data, log)
+  def input(android, data, log)
     if data == 'disconnect'
       @android.disconnect
     end

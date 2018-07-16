@@ -4,7 +4,7 @@ class BuSocketInator < Inator
     @socket = socket
   end
 
-  def in(data, log)
+  def in(android, data, log)
 
   end
 

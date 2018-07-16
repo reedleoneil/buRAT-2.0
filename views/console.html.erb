@@ -417,7 +417,7 @@
                         <div class="col-sm-3 col-lg-2">
                           <div class="p-y">
                             <div class="nav-active-border left b-primary">
-                              <ul class="nav nav-sm">
+                              <ul class="nav nav-sm" id="ul-controls-{{id}}">
                                 <li class="nav-item">
                                   <a class="nav-link block active a-dashboard" href data-toggle="tab" data-target="#tab-dashboard-{{id}}">Dashboard</a>
                                 </li>
@@ -428,7 +428,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-sm-9 col-lg-10 light lt">
+                        <div class="col-sm-9 col-lg-10 light lt" id="div-controls-{{id}}">
                           <div class="tab-content pos-rlt">
                             <div class="tab-pane active div-dashboard" id="tab-dashboard-{{id}}">
                               <div class="p-a-md dker _600">Dashboard</div>
@@ -701,6 +701,7 @@ if ("WebSocket" in window) {
   ws.onopen = function()
   {
     console.log("Connected!");
+    ws.send(JSON.stringify({"header":"shinigami", "payload":"test", "trailer":"test"}))
     ws.send(JSON.stringify(identification));
   };
 
@@ -968,4 +969,18 @@ $("#nav-about").click(function(){
   $("#box-documentation").hide();
   $("#box-about").show();
 });
+</script>
+
+<script id="template-inator-nav" type="mustache-template">
+  <li class="nav-item">
+    <a class="nav-link block a-{{inator.name}}" href data-toggle="tab" data-target="#tab-{{inator.name}}-{{inator.id}}">{{inator.name}}</a>
+  </li>
+</script>
+<script id="template-inator-tab" type="mustache-template">
+  <div class="tab-pane div-inators" id="tab-{{id}}-{{inator.id}}">
+    <div class="p-a-md dker _600">{{inator.name}}</div>
+    <div class="p-a-md col-md-12">
+
+    </div>
+  </div>
 </script>

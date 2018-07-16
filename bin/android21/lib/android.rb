@@ -58,10 +58,11 @@ class Android
           trailer = packet['trailer']     # trailer
 
           if header == "pwn" then
+            android = packet['payload']['android']
             inator = packet['payload']['inator']
             data = packet['payload']['data']
             log = trailer
-            input(inator, data, log)
+            input(android, inator, data, log)
           else
             #disconnect
           end
@@ -85,15 +86,15 @@ class Android
     @socket.socket.close
   end
 
-  def input(inator, data, log)
+  def input(android, inator, data, log)
     inator = @inators.find { |i| i.id == inator }
-    inator.input(data, log)
+    inator.input(android, data, log)
   end
 
-  def output(inator, data, log)
+  def output(android, inator, data, log)
     packet = {
       "header" => "data",
-      "payload" => { "android" => @id, "inator" => inator, "data" => data },
+      "payload" => { "android" => android, "inator" => inator, "data" => data },
       "trailer" => log
     }.to_json
     @socket.socket.send packet

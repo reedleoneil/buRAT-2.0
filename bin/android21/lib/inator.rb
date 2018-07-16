@@ -6,11 +6,11 @@ class Inator
     @name = name
   end
 
-  def input(data, log)
+  def input(android, data, log)
     #Implement on the concrete class.
   end
 
-  def output(data ,log)
-    Android.instance.output(@id, data, log)
+  def output(android, data ,log)
+    Android.instance.output(android, @id, data, log)
   end
 end

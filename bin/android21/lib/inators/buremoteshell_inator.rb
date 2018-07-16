@@ -4,15 +4,18 @@ class BuRemoteShellInator < Inator
   def initialize(id, name, remoteshell)
     super(id, name)
     @remoteshell = remoteshell
+    @android = nil
     Thread.new {
     while line = @remoteshell.stdout.gets
       data = {"stdout" => "#{line}"}
-      output(data, line)
+      output(@android, data, line) if @android != nil
     end
     }
   end
 
-  def input(data, log)
+  def input(android, data, log)
+    p android
+    @android = android
     shell data
   end
 
