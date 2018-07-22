@@ -1,0 +1,83 @@
+<script type='text/javascript'>
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+identification = {"header": "android",
+                  "payload": {
+                    "id": "0001",
+                    "type": "Slave",
+                    "name": "Android 22",
+                    "computer": "katana",
+                    "user": "samurai",
+                    "os": "Ubuntu 18.04",
+                    "ip": "localhost",
+                    "country": "Japan",
+                    "city": "Osaka",
+                    "inators": [{"id": "0000", "name": "Console"}]
+                  },
+                  "trailer": "console"};
+
+class Android {
+  constructor(id, name, inators, socket){
+    this.id = id;
+    this.name = name;
+    this.inators = inators;
+    this.socket = socket;
+  }
+
+  connect() {
+    var android = this;
+    var socket = new WebSocket(android.socket.host);
+    //android.socket.socket = socket;
+
+
+    //Open
+    socket.onopen = function()
+    {
+      socket.send(JSON.stringify(identification));
+      socket.send(JSON.stringify({'header':'shinigami'}));
+      console.log('connected');
+    };
+
+    //Message
+    socket.onmessage = function (evt)
+    {
+      console.log(evt.data)
+      try {
+        var packet = JSON.parse(evt.data);
+        var header = packet['header'];
+        var payload = packet['payload'];
+        var trailer = packet['trailer'];
+        console.log(trailer);
+      }
+      catch(err) {
+        console.log(err);
+      }
+    };
+
+    //Close
+    socket.onclose = function()
+    {
+      console.log('disconnectd');
+      if(android.socket.reconnect_enabled) {
+        console.log('reconnecting');
+        sleep(android.socket.reconnect_interval).then(() => { android.connect(); })
+      }
+    };
+  }
+
+}
+
+class Socket {
+  constructor(socket, host, reconnect_interval, reconnect_enabled){
+    this.socket = socket;
+    this.host = host;
+    this.reconnect_interval = reconnect_interval;
+    this.reconnect_enabled = reconnect_enabled;
+  }
+}
+var socket = new Socket(null, 'ws://' + window.document.location.host + '/', 7, true);
+var android = new Android('0001', 'Android 1', 'test', socket);
+android.connect();
+</script>
