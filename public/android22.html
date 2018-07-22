@@ -3,21 +3,6 @@ function sleep (time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-identification = {"header": "android",
-                  "payload": {
-                    "id": "0001",
-                    "type": "Slave",
-                    "name": "Android 22",
-                    "computer": "katana",
-                    "user": "samurai",
-                    "os": "Ubuntu 18.04",
-                    "ip": "localhost",
-                    "country": "Japan",
-                    "city": "Osaka",
-                    "inators": [{"id": "0000", "name": "Console"}]
-                  },
-                  "trailer": "console"};
-
 class Android {
   constructor(id, name, inators, socket){
     this.id = id;
@@ -26,16 +11,33 @@ class Android {
     this.socket = socket;
   }
 
+  android() {
+    return {"header": "android",
+                      "payload": {
+                        "id": "0001",
+                        "type": "Slave",
+                        "name": "Android 22",
+                        "computer": "katana",
+                        "user": "samurai",
+                        "os": "Ubuntu 18.04",
+                        "ip": "localhost",
+                        "country": "Japan",
+                        "city": "Osaka",
+                        "inators": inators
+                      },
+                      "trailer": "console"};
+  }
+
   connect() {
     var android = this;
     var socket = new WebSocket(android.socket.host);
-    //android.socket.socket = socket;
+    android.socket.socket = socket;
 
 
     //Open
     socket.onopen = function()
     {
-      socket.send(JSON.stringify(identification));
+      socket.send(JSON.stringify(android.android()));
       socket.send(JSON.stringify({'header':'shinigami'}));
       console.log('connected');
     };
@@ -67,6 +69,33 @@ class Android {
     };
   }
 
+  disconnect() {
+    var android = this;
+    android.socket.socket.close();
+  }
+
+  input(android, inator, data, log) {
+
+  }
+
+  output(android, inator, data, log) {
+
+  }
+}
+
+class Inator {
+  constructor(id, name){
+    this.id = id;
+    this.name = name;
+  }
+
+  input(android, data, log) {
+    //Implement on the concrete class.
+  }
+
+  output(android, data, log) {
+
+  }
 }
 
 class Socket {
@@ -77,7 +106,34 @@ class Socket {
     this.reconnect_enabled = reconnect_enabled;
   }
 }
+
+class SocketInator extends Inator {
+  constructor(id, name, socket) {
+    super(id, name);
+    this.socket = socket;
+  }
+
+  input(android, data, log) {
+
+  }
+
+  set_host(host) {
+    this.socket.host = host;
+  }
+
+  set_reconnect_enabled(value) {
+    this.socket.reconnect_enabled = value;
+  }
+
+  set_reconnect_interval(interval) {
+    this.socket.reconnect_interval = interval;
+  }
+}
+
 var socket = new Socket(null, 'ws://' + window.document.location.host + '/', 7, true);
-var android = new Android('0001', 'Android 1', 'test', socket);
+
+var socketInator = new SocketInator('0000', 'Socket', socket);
+var inators = [socketInator];
+var android = new Android('0001', 'Android 1', inators, socket);
 android.connect();
 </script>
