@@ -1,22 +1,38 @@
+<div id='ui'>ui</div>
+
+<div id='remoteshell'></ui>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+
 <script type='text/javascript'>
 function sleep (time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
+/*Core*/
+var _instance = null;
+
 class Android {
-  constructor(id, name, inators, socket){
-    this.id = id;
-    this.name = name;
-    this.inators = inators;
-    this.socket = socket;
+  constructor(){
+    this.id = null;
+    this.name = null;
+    this.inators = null;
+    this.socket = null;
+    this.deathnote = null;
+  }
+
+  static instance() {
+    if(!_instance)
+      _instance = new this;
+    return _instance;
   }
 
   android() {
     return {"header": "android",
                       "payload": {
-                        "id": "0001",
+                        "id": this.id,
                         "type": "Slave",
-                        "name": "Android 22",
+                        "name": this.name,
                         "computer": "katana",
                         "user": "samurai",
                         "os": "Ubuntu 18.04",
@@ -28,22 +44,21 @@ class Android {
                       "trailer": "console"};
   }
 
-  connect() {
+  connect(socket) {
     var android = this;
-    var socket = new WebSocket(android.socket.host);
-    android.socket.socket = socket;
-
+    var s = new WebSocket(socket.host);
+    socket.socket = s;
 
     //Open
-    socket.onopen = function()
+    s.onopen = function()
     {
-      socket.send(JSON.stringify(android.android()));
-      socket.send(JSON.stringify({'header':'shinigami'}));
+      s.send(JSON.stringify(android.android()));
+      s.send(JSON.stringify({'header':'shinigami'}));
       console.log('connected');
     };
 
     //Message
-    socket.onmessage = function (evt)
+    s.onmessage = function (evt)
     {
       console.log(evt.data)
       try {
@@ -51,7 +66,15 @@ class Android {
         var header = packet['header'];
         var payload = packet['payload'];
         var trailer = packet['trailer'];
-        console.log(trailer);
+
+        if (header == 'pwn' || header == 'data') {
+          var _android = packet['payload']['android'];
+          var _inator = packet['payload']['inator'];
+          var _data = packet['payload']['data'];
+          android.input(header, _android, _inator, _data, trailer);
+        } else if (header == 'android') {
+          android.deathnote.android(packet['payload']);
+        }
       }
       catch(err) {
         console.log(err);
@@ -59,12 +82,12 @@ class Android {
     };
 
     //Close
-    socket.onclose = function()
+    s.onclose = function()
     {
       console.log('disconnectd');
-      if(android.socket.reconnect_enabled) {
+      if(socket.reconnect_enabled) {
         console.log('reconnecting');
-        sleep(android.socket.reconnect_interval).then(() => { android.connect(); })
+        sleep(socket.reconnect_interval).then(() => { android.connect(socket); })
       }
     };
   }
@@ -74,12 +97,24 @@ class Android {
     android.socket.socket.close();
   }
 
-  input(android, inator, data, log) {
-
+  input(header, _android, _inator, _data, trailer) { //input to inators
+    if (header == 'pwn') {
+      var inator = this.inators.find(i => i.id == _inator);
+      inator.input(_android, _data, trailer);
+    } else if (header == 'data') {
+      var pwned_android = this.deathnote.androids.find(a => a.id == _android);
+      var pwned_inator = android.inators.find(i => i.id == _inator);
+      pwned_inator.input(_data, trailer);
+    }
   }
 
-  output(android, inator, data, log) {
-
+  output(header, android, inator, data, trailer) { //this is called by inators
+    var packet = JSON.stringify({
+      'header' : header,
+      'payload' : {'android' : android, 'inator' : inator, 'data' : data},
+      'trailer' : trailer
+    });
+    this.socket.socket.send(packet);
   }
 }
 
@@ -89,12 +124,12 @@ class Inator {
     this.name = name;
   }
 
-  input(android, data, log) {
+  input(android, data, trailer) {
     //Implement on the concrete class.
   }
 
-  output(android, data, log) {
-
+  output(android, data, trailer) {
+    Android.instance().output('pwn', android, this.id, data, trailer);
   }
 }
 
@@ -114,7 +149,7 @@ class SocketInator extends Inator {
   }
 
   input(android, data, log) {
-
+    console.log('this is called from socketinator');
   }
 
   set_host(host) {
@@ -130,10 +165,112 @@ class SocketInator extends Inator {
   }
 }
 
-var socket = new Socket(null, 'ws://' + window.document.location.host + '/', 7, true);
+/*Deathnote*/
 
+class Deathnote {
+  constructor(ui) {
+    this.ui = ui;
+    this.androids = [];
+    this.inators = [];
+  }
+
+  android(android) {
+    //add to list
+    console.log('this is called from deathnote');
+    var _android = JSON.stringify(android);
+    this.ui.append("<b>" + _android + "</b>");
+    //create ui inators
+
+    //create pwned androids
+
+    //create pwned inators
+
+    //update ui
+  }
+}
+
+class DeathnoteInator extends Inator {
+  constructor(id, name, deathnote) {
+    super(id, name);
+    this.deathnote = deathnote;
+  }
+
+  input(android, data, trailer) {
+    //android
+    console.log('this is called from deathnote inator');
+  }
+
+  test() {
+    //out(android, data, trailer);
+  }
+}
+
+/*Pwned*/
+
+class PwnedAndroid {
+  constructor(id, name, inators) {
+    this.id = id;
+    this.name = name;
+  }
+}
+
+class PwnedInator {
+  constructor(id, name) {
+    this.id = id;
+    this.name = name;
+    this.android = android;
+  }
+
+  input(data, trailer) {
+    //Implement on the concrete class.
+  }
+
+  output(data, trailer) {
+    Android.instance().output('pwn', this.android, this.id, data, trailer);
+  }
+}
+
+class PwnedRemoteShell {
+  constructor(ui) {
+    this.ui = ui;
+  }
+}
+
+class PwnedRemoteShellInator extends PwnedInator {
+  constructor(id, name, remoteshell) {
+    super(id, name);
+    this.remoteshell = remoteshell;
+    //bind ui here
+    //remoteshell.ui.onclick(sdtin(ui.text));
+  }
+
+  input(data, trailer) {
+    //input
+  }
+
+  stdout(data) {
+    //ui.append data
+  }
+
+
+  stdin(data) {
+    //output(ui.android, this.id, data, trailer);
+  }
+}
+
+
+/*MAIN*/
+var ui = $('#ui');
+var socket = new Socket(null, 'ws://' + window.document.location.host + '/', 7, true);
+var deathnote = new Deathnote(ui);
 var socketInator = new SocketInator('0000', 'Socket', socket);
-var inators = [socketInator];
-var android = new Android('0001', 'Android 1', inators, socket);
-android.connect();
+var deathnoteInator = new DeathnoteInator('0001', 'Deathnote', deathnote);
+var inators = [socketInator, deathnoteInator];
+var android = Android.instance();
+android.id = '0022';
+android.name = 'Android 22';
+android.inators = inators;
+android.socket = socket;
+android.deathnote = deathnote;
+android.connect(socket);
 </script>
