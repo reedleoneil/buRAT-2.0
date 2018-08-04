@@ -53,7 +53,7 @@ class Android {
     s.onopen = function()
     {
       s.send(JSON.stringify(android.android()));
-      s.send(JSON.stringify({'header':'shinigami'}));
+      s.send(JSON.stringify({'header': 'shinigami', 'payload': '', 'trailer': ''}));
       console.log('connected');
     };
 
