@@ -1,0 +1,138 @@
+<script type='text/javascript'>
+  function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+  class Android {
+    constructor(id, name, inators, websocket) {
+      this.id = id;
+      this.name = name;
+      this.inators = inators;
+      this.websocket = websocket;
+    }
+
+    android() {
+      return {"header": "android",
+                        "payload": {
+                          "id": this.id,
+                          "type": "Slave",
+                          "name": this.name,
+                          "computer": "katana",
+                          "user": "samurai",
+                          "os": "Ubuntu 18.04",
+                          "ip": "localhost",
+                          "country": "Japan",
+                          "city": "Osaka",
+                          "inators": []
+                        },
+                        "trailer": "console"};
+    }
+  }
+
+  class BuAndroid extends Android {
+    constructor(id, name, inators, websocket) {
+      super(id, name, inators, websocket);
+    }
+
+    connect() {
+      this.inators.find(i => i.name = 'Socket').connect();
+    }
+  }
+
+  class Inator {
+    constructor(id, name, android) {
+      this.id = id;
+      this.name = name;
+      this.android = android;
+    }
+  }
+
+  class BuInator extends Inator{
+    constructor(id, name, android) {
+      super(id, name, android);
+    }
+
+    output(data) {
+      android.websocket.send(data);
+    }
+  }
+
+  class PwnedInator extends Inator {
+    constructor(id, name, android) {
+      super(id, name, android);
+    }
+  }
+
+  class BuSocket {
+    constructor(host, reconnect_enabled, reconnect_interval) {
+      this.host = host;
+      this.reconnect_enabled = reconnect_enabled;
+      this.reconnect_interval = reconnect_interval;
+    }
+  }
+
+  class BuSocketInator extends BuInator {
+    constructor(id, name, android, socket) {
+      super(id, name, android);
+      this.socket = socket;
+    }
+
+    connect() {
+      var android = this.android;
+      var socket = this.socket;
+      var websocket = new WebSocket(socket.host);
+      android.websocket = websocket;
+      //Open
+      websocket.onopen = function()
+      {
+        websocket.send(JSON.stringify(android.android()));
+        websocket.send(JSON.stringify({'header': 'shinigami', 'payload': '', 'trailer': ''}));
+        console.log('connected');
+      };
+
+      //Message
+      websocket.onmessage = function (evt)
+      {
+        console.log(evt.data)
+        try {
+          var packet = JSON.parse(evt.data);
+          var header = packet['header'];
+          var payload = packet['payload'];
+          var trailer = packet['trailer'];
+
+          if (header == 'pwn' || header == 'data') {
+            var _android = packet['payload']['android'];
+            var _inator = packet['payload']['inator'];
+            var _data = packet['payload']['data'];
+            //android.input(header, _android, _inator, _data, trailer);
+          } else if (header == 'android') {
+            //android.deathnote.android(packet['payload']);
+          }
+        }
+        catch(err) {
+          console.log(err);
+        }
+      };
+
+      //Close
+      websocket.onclose = function()
+      {
+        console.log('disconnectd');
+        if(socket.reconnect_enabled) {
+          console.log('reconnecting');
+          sleep(socket.reconnect_interval).then(() => { android.connect(); })
+        }
+      };
+    }
+
+    disconnect() {
+      websocket.close();
+    }
+  }
+
+  var bu_android = new BuAndroid('0023', 'Android 23', [], null);
+  var bu_socket = new BuSocket('ws://localhost:10969', true, 7);
+  var bu_socket_inator = new BuSocketInator('0001', 'Socket', bu_android, bu_socket);
+  bu_android.inators = [bu_socket_inator];
+  bu_android.connect();
+</script>
