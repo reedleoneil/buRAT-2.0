@@ -3,6 +3,7 @@
     return new Promise((resolve) => setTimeout(resolve, time));
   }
 
+  //Core
   class Android {
     constructor(id, name, inators, websocket) {
       this.id = id;
@@ -29,6 +30,15 @@
     }
   }
 
+  class Inator {
+    constructor(id, name, android) {
+      this.id = id;
+      this.name = name;
+      this.android = android;
+    }
+  }
+
+  //Bu
   class BuAndroid extends Android {
     constructor(id, name, inators, websocket) {
       super(id, name, inators, websocket);
@@ -39,14 +49,6 @@
     }
   }
 
-  class Inator {
-    constructor(id, name, android) {
-      this.id = id;
-      this.name = name;
-      this.android = android;
-    }
-  }
-
   class BuInator extends Inator{
     constructor(id, name, android) {
       super(id, name, android);
@@ -54,12 +56,6 @@
 
     output(data) {
       android.websocket.send(data);
-    }
-  }
-
-  class PwnedInator extends Inator {
-    constructor(id, name, android) {
-      super(id, name, android);
     }
   }
 
@@ -129,6 +125,20 @@
       websocket.close();
     }
   }
+
+  //Pwned
+  class PwnedAndroid extends Android {
+    constructor(id, name, inators, websocket) {
+      super(id, name, inators, websocket);
+    }
+  }
+
+  class PwnedInator extends Inator {
+    constructor(id, name, android) {
+      super(id, name, android);
+    }
+  }
+
 
   var bu_android = new BuAndroid('0023', 'Android 23', [], null);
   var bu_socket = new BuSocket('ws://localhost:10969', true, 7);
