@@ -8,7 +8,9 @@ GEM
     json (2.3.0)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
-    puma (3.12.6)
+    nio4r (2.5.2)
+    puma (4.3.11)
+      nio4r (~> 2.0)
     rack (2.2.3)
     rack-protection (2.0.2)
       rack
